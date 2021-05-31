@@ -36,14 +36,7 @@ namespace AreaPerimeterCalculator.Figures
             double halfPDiff = 0;
             foreach (var side in Sides)
             {
-                if(halfPDiff == 0)
-                {
-                    halfPDiff = halfP - side;
-                }
-                else
-                {
-                    halfPDiff *= halfP - side;
-                }
+                halfPDiff = (halfPDiff == 0) ? halfP - side : halfPDiff *= halfP - side;
             }
             double S = Math.Sqrt(halfP*halfPDiff);
             return S;

@@ -13,7 +13,6 @@ namespace AreaPerimeterCalculator
         {
             Calculator calculator = new Calculator();
             calculator.StartCalculationProgram();
-            //calculator.ShowFigureData(triangle);
         }
     }
 }
