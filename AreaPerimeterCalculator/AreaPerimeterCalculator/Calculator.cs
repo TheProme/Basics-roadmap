@@ -130,26 +130,17 @@ namespace AreaPerimeterCalculator
                     switch (figure.Name)
                     {
                         case FigureNames.Triangle:
-                            {
-                                CreateTriangle(figure as Triangle);
-                                break;
-                            }
-
+                            CreateTriangle(figure as Triangle);
+                            break;
                         case FigureNames.Rectangle:
-                            {
-                                CreateRectangle(figure as Rectangle);
-                                break;
-                            }
+                            CreateRectangle(figure as Rectangle);
+                            break;
                         case FigureNames.Ellipse:
-                            {
-                                CreateEllipse(figure as Ellipse);
-                                break;
-                            }
+                            CreateEllipse(figure as Ellipse);
+                            break;
                         case FigureNames.Trapezoid:
-                            {
-                                CreateTrapezoid(figure as Trapezoid);
-                                break;
-                            }
+                            CreateTrapezoid(figure as Trapezoid);
+                            break;
                         default:
                             break;
                     }
