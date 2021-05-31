@@ -35,14 +35,7 @@ namespace AreaPerimeterCalculator.Figures
             double S = 0;
             foreach (var side in Sides)
             {
-                if(S == 0)
-                {
-                    S = side;
-                }
-                else
-                {
-                    S *= side;
-                }
+                S = S == 0 ? side : S *= side;
             }
             return S;
         }
