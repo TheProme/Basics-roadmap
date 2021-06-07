@@ -10,19 +10,25 @@ namespace ThreadPoolSync
     {
         static void Main(string[] args)
         {
-            ThreadPool threadPool = new ThreadPool(10);
-            threadPool.AddActions(Job, 20);
+            ThreadPool threadPool = new ThreadPool();
+            for (int i = 0; i < 10; i++)
+            {
+                threadPool.AddWorker();
+            }
+            Console.ReadLine();
+            for (int i = 0; i < 10; i++)
+            {
+                threadPool.AddJob(Job);
+            }
             Console.ReadLine();
         }
 
-        public static bool Job()
+        public static void Job()
         {
             for (int i = 0; i < 10000000; i++)
             {
                 string str = i.ToString();
             }
-            Console.WriteLine("Job is done");
-            return true;
         }
     }
 }
