@@ -9,48 +9,64 @@ namespace ThreadPoolSync
 {
     public class QueueWorker
     {
+        public EventWaitHandle JobWaitHandler = new AutoResetEvent(false);
+        public EventWaitHandle WorkerResetHandler = new AutoResetEvent(false);
+
         public delegate void WorkStatus(QueueWorker worker);
         public event WorkStatus NotifyCompletion;
+
         private Thread _thread;
+        public Action PickedAction;
+
         public QueueWorker(string name)
         {
             Name = name;
+            _thread = new Thread(new ThreadStart(CompleteJob)) { Name = this.Name };
+            _thread.Start();
         }
 
         public string Name { get; private set; }
 
         public bool HasFinishedTask { get; private set; } = false;
 
-        private void CompleteJob(Action job)
+        private void CompleteJob()
         {
-            try
+            while (_thread.IsAlive)
             {
-                job.Invoke();
-                Console.WriteLine($"{_thread.Name} completed a task");
+                if (PickedAction != null)
+                {
+                    try
+                    {
+                        PickedAction.Invoke();
+                        Console.WriteLine($"{_thread.Name} completed a task");
+                        PickedAction = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"{_thread.Name} failed to complete a task");
+                    }
+                    finally
+                    {
+                        HasFinishedTask = true;
+
+                        WorkerResetHandler.Set();
+
+                        NotifyCompletion.Invoke(this);
+                        HasFinishedTask = false;
+                    }
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                }
             }
-            catch(Exception ex)
-            {
-                Console.WriteLine($"{_thread.Name} failed to complete a task");
-            }
-            finally
-            {
-                HasFinishedTask = true;
-                NotifyCompletion.Invoke(this);
-                HasFinishedTask = false;
-            }
+            Console.WriteLine($"{_thread.Name} FINISHED");
         }
 
         public void Execute(Action job)
         {
-            try
-            {
-                _thread = new Thread(new ThreadStart(()=> { CompleteJob(job); })) { Name = this.Name };
-                _thread.Start();
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine($"{_thread.Name} failed to start");
-            }
+            JobWaitHandler.WaitOne();
+            PickedAction = job;
         }
     }
 }

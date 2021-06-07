@@ -17,13 +17,17 @@ namespace ThreadPoolSync
 
         private Thread _poolWorker;
 
-        public ThreadPool()
+        public ThreadPool(int numberOfWorkers)
         {
             _poolWorker = new Thread(CheckJobsQueue) { IsBackground = true, Name = "ThreadPoolWorker"};
             _poolWorker.Start();
+            for (int i = 0; i < numberOfWorkers; i++)
+            {
+                AddWorker();
+            }
         }
 
-        public void AddWorker()
+        protected void AddWorker()
         {
             lock(_locker)
             {
@@ -37,6 +41,7 @@ namespace ThreadPoolSync
 
         private void NewWorker_NotifyCompletionHandler(QueueWorker worker)
         {
+            worker.WorkerResetHandler.WaitOne();
             lock(_locker)
             {
                 if (worker.HasFinishedTask)
@@ -57,19 +62,21 @@ namespace ThreadPoolSync
 
         private void CheckJobsQueue()
         {
-            while(true)
+            while(_poolWorker.IsAlive)
             {
                 if(_jobs.Count > 0 && _pendingWorkers.Count > 0)
                 {
-                    lock (_locker)
-                    {
-                        Console.WriteLine($"Tasks left: {_jobs.Count}");
-                        var pickedJob = _jobs.Dequeue();
-                        var pickedWorker = _pendingWorkers.Dequeue();
-                        Console.WriteLine($"{pickedWorker.Name} was given task");
-                        _activeWorkers.Add(pickedWorker);
-                        pickedWorker.Execute(pickedJob);
-                    }
+                    Console.WriteLine($"Tasks left: {_jobs.Count}");
+                    var pickedJob = _jobs.Dequeue();
+                    var pickedWorker = _pendingWorkers.Dequeue();
+                    Console.WriteLine($"{pickedWorker.Name} was given task");
+                    _activeWorkers.Add(pickedWorker);
+                    pickedWorker.JobWaitHandler.Set();
+                    pickedWorker.Execute(pickedJob);
+                }
+                else
+                {
+                    Thread.Sleep(100);
                 }
             }
         }
