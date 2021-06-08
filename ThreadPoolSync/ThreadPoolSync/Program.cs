@@ -11,8 +11,8 @@ namespace ThreadPoolSync
     {
         static void Main(string[] args)
         {
-            ThreadPool threadPool = new ThreadPool(5);
-            for (int i = 0; i < 50; i++)
+            ThreadPool threadPool = new ThreadPool(500);
+            for (int i = 0; i < 100; i++)
             {
                 threadPool.AddJob(Job);
             }

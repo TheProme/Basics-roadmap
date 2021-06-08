@@ -32,31 +32,26 @@ namespace ThreadPoolSync
         {
             while (_thread.IsAlive)
             {
-                if (PickedAction != null)
+                try
                 {
-                    try
-                    {
-                        PickedAction.Invoke();
-                        Console.WriteLine($"{_thread.Name} completed a task");
-                        PickedAction = null;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"{_thread.Name} failed to complete a task");
-                    }
-                    finally
+                    PickedAction?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"{_thread.Name} failed to complete a task");
+                }
+                finally
+                {
+                    if(PickedAction != null)
                     {
                         CompletedTask = true;
+                        Console.WriteLine($"{_thread.Name} completed a task");
 
-                        NotifyCompletion.Invoke(this);
-                        CompletedTask = false;
-
-                        _jobWaitHandler.WaitOne();
+                        NotifyCompletion?.Invoke(this);
+                        PickedAction = null;
                     }
-                }
-                else
-                {
-                    Thread.Sleep(100);
+
+                    _jobWaitHandler.WaitOne();
                 }
             }
             Console.WriteLine($"{_thread.Name} FINISHED");
@@ -64,6 +59,7 @@ namespace ThreadPoolSync
 
         public void Execute(Action job)
         {
+            CompletedTask = false;
             _jobWaitHandler.Set();
             PickedAction = job;
         }
