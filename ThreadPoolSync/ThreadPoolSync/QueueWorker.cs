@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace ThreadPoolSync
 {
-    public class QueueWorker
+    internal class QueueWorker
     {
-        public EventWaitHandle JobWaitHandler = new AutoResetEvent(false);
-        public EventWaitHandle WorkerResetHandler = new AutoResetEvent(false);
+        private EventWaitHandle _jobWaitHandler = new AutoResetEvent(false);
 
         public delegate void WorkStatus(QueueWorker worker);
         public event WorkStatus NotifyCompletion;
@@ -27,7 +26,7 @@ namespace ThreadPoolSync
 
         public string Name { get; private set; }
 
-        public bool HasFinishedTask { get; private set; } = false;
+        public bool CompletedTask { get; private set; } = false;
 
         private void CompleteJob()
         {
@@ -47,12 +46,12 @@ namespace ThreadPoolSync
                     }
                     finally
                     {
-                        HasFinishedTask = true;
-
-                        WorkerResetHandler.Set();
+                        CompletedTask = true;
 
                         NotifyCompletion.Invoke(this);
-                        HasFinishedTask = false;
+                        CompletedTask = false;
+
+                        _jobWaitHandler.WaitOne();
                     }
                 }
                 else
@@ -65,7 +64,7 @@ namespace ThreadPoolSync
 
         public void Execute(Action job)
         {
-            JobWaitHandler.WaitOne();
+            _jobWaitHandler.Set();
             PickedAction = job;
         }
     }

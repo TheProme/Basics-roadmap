@@ -29,22 +29,22 @@ namespace ThreadPoolSync
 
         protected void AddWorker()
         {
-            lock(_locker)
+
+            QueueWorker newWorker = new QueueWorker($"worker{_count}");
+            newWorker.NotifyCompletion += NewWorker_NotifyCompletionHandler;
+            lock (_locker)
             {
-                QueueWorker newWorker = new QueueWorker($"worker{_count}");
-                newWorker.NotifyCompletion += NewWorker_NotifyCompletionHandler;
                 _pendingWorkers.Enqueue(newWorker);
-                Console.WriteLine($"Added {newWorker.Name}");
-                _count++;
             }
+            Console.WriteLine($"Added {newWorker.Name}");
+            _count++;
         }
 
         private void NewWorker_NotifyCompletionHandler(QueueWorker worker)
         {
-            worker.WorkerResetHandler.WaitOne();
-            lock(_locker)
+            if (worker.CompletedTask)
             {
-                if (worker.HasFinishedTask)
+                lock(_locker)
                 {
                     _activeWorkers.Remove(worker);
                     _pendingWorkers.Enqueue(worker);
@@ -71,7 +71,6 @@ namespace ThreadPoolSync
                     var pickedWorker = _pendingWorkers.Dequeue();
                     Console.WriteLine($"{pickedWorker.Name} was given task");
                     _activeWorkers.Add(pickedWorker);
-                    pickedWorker.JobWaitHandler.Set();
                     pickedWorker.Execute(pickedJob);
                 }
                 else
