@@ -65,6 +65,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -84,10 +85,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BaseViewModel.cs" />
     <Compile Include="BytesToMegabytesConverter.cs" />
-    <Compile Include="ProcessViewModel.cs" />
+    <Compile Include="TaskManagerViewModel.cs" />
     <Compile Include="RelayCommand.cs" />
-    <Compile Include="RunningProcess.cs" />
+    <Compile Include="ProcessViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

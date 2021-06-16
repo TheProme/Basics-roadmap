@@ -1,121 +1,113 @@
-﻿using NvAPIWrapper.GPU;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using System.Drawing;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media.Imaging;
 
 namespace SimpleTaskManager
 {
-    public class ProcessViewModel: INotifyPropertyChanged
+    public class ProcessViewModel : BaseViewModel
     {
-        private object _locker = new object();
-        public RunningProcess SelectedProcess { get; set; }
+        private Process _process;
 
-        public ObservableCollection<RunningProcess> RunningProcesses { get; set; } = new ObservableCollection<RunningProcess>();
+        private int _id;
 
-        private RelayCommand killProcessCommand;
-        public RelayCommand KillProcessCommand
+        public int Id
         {
-            get
+            get { return _id; }
+            set { _id = value; OnPropertyChanged(); }
+        }
+
+        private string _name;
+
+        public string Name
+        {
+            get { return _name; }
+            set { _name = value; OnPropertyChanged(); }
+        }
+
+        private long _workingSet;
+
+        public long WorkingSet
+        {
+            get { return _workingSet; }
+            set { _workingSet = value; OnPropertyChanged(); }
+        }
+
+        private bool _isUsingGpu;
+
+        public bool IsUsingGpu
+        {
+            get { return _isUsingGpu; }
+            set { _isUsingGpu = value; OnPropertyChanged(); }
+        }
+
+
+        private double _oldCpuUsage = 0;
+
+        private double _cpuUsage;
+
+        public double CpuUsage
+        {
+            get { return _cpuUsage; }
+            set { _cpuUsage = value; OnPropertyChanged(); }
+        }
+
+        private BitmapSource _iconImage;
+
+        public BitmapSource IconImage
+        {
+            get { return _iconImage; }
+            set { _iconImage = value; OnPropertyChanged(); }
+        }
+
+
+        public ProcessViewModel(Process process)
+        {
+            _process = process;
+            _oldCpuUsage = _process.TotalProcessorTime.TotalMilliseconds;
+            try
             {
-                return killProcessCommand ??
-                  (killProcessCommand = new RelayCommand(obj =>
-                  {
-                      SelectedProcess.KillProcess();
-                  }, obj => obj != null));
-            }
-        }
-
-        private int _gpuPercentage;
-
-        public int GpuPercentage
-        {
-            get { return _gpuPercentage; }
-            set { _gpuPercentage = value; OnPropertyChanged("GpuPercentage"); }
-        }
-
-
-        private void SetGpuData()
-        {
-            foreach (var item in PhysicalGPU.GetPhysicalGPUs())
-            {
-                GpuPercentage = item.UsageInformation.GPU.Percentage;
-            }
-        }
-
-        private Thread _processChecker;
-
-        public ProcessViewModel()
-        {
-            _processChecker = new Thread(new ThreadStart(CheckProcesses)) { IsBackground = true };
-            _processChecker.Start();
-        }
-
-        private void CheckProcesses()
-        {
-            while(true)
-            {
-                SetGpuData();
-                Process[] gpuProcesses = PhysicalGPU.GetPhysicalGPUs().FirstOrDefault()?.GetActiveApplications();
-                Process[] processes = Process.GetProcesses();
-                foreach (var item in processes)
+                using (Icon ico = Icon.ExtractAssociatedIcon(_process.MainModule.FileName))
                 {
-                    var equalGpuProcess = gpuProcesses.FirstOrDefault(x => x.Id == item.Id);
-                    RunningProcess existingProcess;
-                    lock (_locker)
-                    {
-                        existingProcess = RunningProcesses.FirstOrDefault(proc => proc.Id == item.Id);
-                    }
-                    if (existingProcess == null)
-                    {
-                        try
-                        {
-                            item.EnableRaisingEvents = true;
-                            item.Exited += Process_Exited;
-                            App.Current.Dispatcher.Invoke(() =>
-                            {
-                                RunningProcesses.Add(new RunningProcess(item));
-                            });
-                            
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"{item.ProcessName} denied request for enabling events!");
-                        }
-                    }
-                    else
-                    {
-                        existingProcess.Refresh(equalGpuProcess == null ? false : true);
-                    }
+                    IconImage = Imaging.CreateBitmapSourceFromHIcon(ico.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
                 }
-                Thread.Sleep(1000);
             }
-        }
-
-        private void Process_Exited(object sender, EventArgs e)
-        {
-            var exitedProcess = sender as Process;
-            lock (_locker)
+            catch(Exception ex)
             {
-                var existingProcess = RunningProcesses.FirstOrDefault(proc => proc.Id == exitedProcess.Id);
-                App.Current.Dispatcher.Invoke(() =>
-                {
-                    RunningProcesses.Remove(existingProcess);
-                });
+
             }
-            Console.WriteLine($"{exitedProcess?.ProcessName} exited!");
+            SetInfoFromProcess(_process);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string prop)
+        public void Refresh(bool usingGpu)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+            SetInfoFromProcess(_process);
+            IsUsingGpu = usingGpu;
+        }
+
+        private void UpdateCpuUsage()
+        {
+            CpuUsage = (_process.TotalProcessorTime.TotalMilliseconds - _oldCpuUsage) / 100;
+            _oldCpuUsage = _process.TotalProcessorTime.TotalMilliseconds;
+        }
+
+
+        private void SetInfoFromProcess(Process process)
+        {
+            Id = process.Id;
+            Name = process.ProcessName;
+            WorkingSet = process.WorkingSet64;
+            UpdateCpuUsage();
+        }
+
+
+        public void KillProcess()
+        { 
+            _process.Kill();
         }
     }
 }
