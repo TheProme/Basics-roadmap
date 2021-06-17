@@ -84,15 +84,6 @@ namespace SimpleTaskManager
             return sys.dwNumberOfProcessors;
         }
 
-
-        private struct ProcessTimes
-        {
-            public long RawCreationTime;
-            public long RawExitTime;
-            public long RawKernelTime;
-            public long RawUserTime;
-        }
-
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetProcessTimes(IntPtr hProcess, out FILETIME lpCreationTime, out FILETIME lpExitTime, out FILETIME lpKernelTime, out FILETIME lpUserTime);
