@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimpleTaskManager"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         x:Name="mainWindow" MaxHeight="700" MaxWidth="570">
 
     <Window.Resources>
@@ -11,7 +12,7 @@
     </Window.Resources>
 
     <StackPanel>
-        <DataGrid ItemsSource="{Binding RunningProcesses}" AutoGenerateColumns="False" MaxHeight="600" SelectedItem="{Binding SelectedProcess}">
+        <DataGrid ItemsSource="{Binding RunningProcesses}" IsReadOnly="True" SelectionMode="Extended" AutoGenerateColumns="False" MaxHeight="600" SelectedItem="{Binding SelectedProcess}">
             <DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
@@ -71,13 +72,15 @@
                                     <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding GpuPercentage}"/>
                                     <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Text="%"/>
                                 </Grid>
-                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                       Margin="5"/>
+                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}" Margin="5"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTextColumn.HeaderTemplate>
                 </DataGridTextColumn>
             </DataGrid.Columns>
+            <i:Interaction.Behaviors>
+                <local:DataGridMultiSelectBehavior SelectedItems="{Binding SelectedProcesses}"/>
+            </i:Interaction.Behaviors>
         </DataGrid>
         <Button Content="Kill process" Height="30" VerticalAlignment="Top" Margin="5" Command="{Binding KillProcessCommand}" CommandParameter="{Binding SelectedProcess}"/>
     </StackPanel>

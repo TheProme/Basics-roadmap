@@ -28,6 +28,15 @@ namespace SimpleTaskManager
             set { _selectedProcess = value; OnPropertyChanged(); }
         }
 
+        private ObservableCollection<ProcessViewModel> _selectedProcesses = new ObservableCollection<ProcessViewModel>();
+
+        public ObservableCollection<ProcessViewModel> SelectedProcesses
+        {
+            get { return _selectedProcesses; }
+            set { _selectedProcesses = value; OnPropertyChanged(); }
+        }
+
+
         public ObservableCollection<ProcessViewModel> RunningProcesses { get; set; } = new ObservableCollection<ProcessViewModel>();
 
         private ICommand killProcessCommand;
@@ -38,7 +47,17 @@ namespace SimpleTaskManager
                 return killProcessCommand ??
                   (killProcessCommand = new RelayCommand(obj =>
                   {
-                      SelectedProcess.KillProcess();
+                      if(SelectedProcesses.Count > 1)
+                      {
+                          foreach (var item in SelectedProcesses)
+                          {
+                              item.KillProcess();
+                          }
+                      }
+                      else
+                      {
+                          SelectedProcess.KillProcess();
+                      }
                   }, obj => obj != null));
             }
         }
