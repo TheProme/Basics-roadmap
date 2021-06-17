@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
@@ -45,9 +46,6 @@ namespace SimpleTaskManager
             set { _isUsingGpu = value; OnPropertyChanged(); }
         }
 
-
-        private double _oldCpuUsage = 0;
-
         private double _cpuUsage;
 
         public double CpuUsage
@@ -64,11 +62,11 @@ namespace SimpleTaskManager
             set { _iconImage = value; OnPropertyChanged(); }
         }
 
-
+        private MarshalledData marshData;
         public ProcessViewModel(Process process)
         {
             _process = process;
-            _oldCpuUsage = _process.TotalProcessorTime.TotalMilliseconds;
+            marshData = new MarshalledData(_process);
             try
             {
                 using (Icon ico = Icon.ExtractAssociatedIcon(_process.MainModule.FileName))
@@ -83,6 +81,8 @@ namespace SimpleTaskManager
             SetInfoFromProcess(_process);
         }
 
+        
+
         public void Refresh(bool usingGpu)
         {
             SetInfoFromProcess(_process);
@@ -91,8 +91,7 @@ namespace SimpleTaskManager
 
         private void UpdateCpuUsage()
         {
-            CpuUsage = (_process.TotalProcessorTime.TotalMilliseconds - _oldCpuUsage) / 100;
-            _oldCpuUsage = _process.TotalProcessorTime.TotalMilliseconds;
+            CpuUsage = marshData.GetProcessCpuUsage();
         }
 
 
@@ -100,7 +99,8 @@ namespace SimpleTaskManager
         {
             Id = process.Id;
             Name = process.ProcessName;
-            WorkingSet = process.WorkingSet64;
+
+            WorkingSet = marshData.GetRamUsage();
             UpdateCpuUsage();
         }
 

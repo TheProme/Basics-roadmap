@@ -51,9 +51,9 @@ namespace SimpleTaskManager
             set { _gpuPercentage = value; OnPropertyChanged(); }
         }
 
-        private ushort _cpuPercentage;
+        private ulong _cpuPercentage;
 
-        public ushort CpuPercentage
+        public ulong CpuPercentage
         {
             get { return _cpuPercentage; }
             set { _cpuPercentage = value; OnPropertyChanged(); }
@@ -67,29 +67,7 @@ namespace SimpleTaskManager
             set { _memoryPercentage = value; OnPropertyChanged(); }
         }
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private class MEMORYSTATUSEX
-        {
-            public uint dwLength;
-            public uint dwMemoryLoad;
-            public ulong ullTotalPhys;
-            public ulong ullAvailPhys;
-            public ulong ullTotalPageFile;
-            public ulong ullAvailPageFile;
-            public ulong ullTotalVirtual;
-            public ulong ullAvailVirtual;
-            public ulong ullAvailExtendedVirtual;
-            public MEMORYSTATUSEX()
-            {
-                this.dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX));
-            }
-        }
-
-
-        [return: MarshalAs(UnmanagedType.Bool)]
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern bool GlobalMemoryStatusEx([In, Out] MEMORYSTATUSEX lpBuffer);
-
+        
 
         private void SetPercentageData()
         {
@@ -97,15 +75,11 @@ namespace SimpleTaskManager
             {
                 GpuPercentage = item.UsageInformation.GPU.Percentage;
             }
-            MEMORYSTATUSEX memStatus = new MEMORYSTATUSEX();
-            if (GlobalMemoryStatusEx(memStatus))
-            {
-                MemoryPercentage = Math.Round((double)memStatus.ullAvailPhys / memStatus.ullTotalPhys * 100, 2);
-            }
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+            MemoryPercentage = MarshalledData.GetTotalMemoryLoad();
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PerfFormattedData_PerfOS_Processor");
             foreach (ManagementObject obj in searcher.Get())
             {
-                CpuPercentage = (ushort)obj["LoadPercentage"];
+                CpuPercentage = (ulong)obj["PercentProcessorTime"];
             }
         }
 

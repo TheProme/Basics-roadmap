@@ -23,24 +23,6 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Memory usage(MB)" Binding="{Binding WorkingSet, Converter={StaticResource BytesToMB}}">
-                    <DataGridTextColumn.HeaderTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <Grid DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding MemoryPercentage}"/>
-                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Text="%"/>
-                                </Grid>
-                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                       Margin="5"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTextColumn.HeaderTemplate>
-                </DataGridTextColumn>
                 <DataGridTextColumn Header="CPU usage" Binding="{Binding CpuUsage}">
                     <DataGridTextColumn.HeaderTemplate>
                         <DataTemplate>
@@ -51,6 +33,24 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding CpuPercentage}"/>
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Text="%"/>
+                                </Grid>
+                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                       Margin="5"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTextColumn.HeaderTemplate>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Memory usage(MB)" Binding="{Binding WorkingSet, Converter={StaticResource BytesToMB}}">
+                    <DataGridTextColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <Grid DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding MemoryPercentage}"/>
                                     <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Text="%"/>
                                 </Grid>
                                 <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}"
