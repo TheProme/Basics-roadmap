@@ -11,77 +11,100 @@
         <local:BytesToMegabytesConverter x:Key="BytesToMB"/>
     </Window.Resources>
 
-    <StackPanel>
-        <DataGrid ItemsSource="{Binding RunningProcesses}" IsReadOnly="True" SelectionMode="Extended" AutoGenerateColumns="False" MaxHeight="600" SelectedItem="{Binding SelectedProcess}">
-            <DataGrid.Columns>
-                <DataGridTemplateColumn>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Grid x:Name="Grid">
-                                <Image Width="20" Height="20" Source="{Binding IconImage}"/>
-                            </Grid>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="CPU usage" Binding="{Binding CpuUsage}">
-                    <DataGridTextColumn.HeaderTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <Grid DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding CpuPercentage}"/>
-                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Text="%"/>
-                                </Grid>
-                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+    <TabControl>
+        <TabItem Header="Task Manager">
+            <StackPanel>
+                <DataGrid ItemsSource="{Binding TaskManagerVM.RunningProcesses}" IsReadOnly="True" SelectionMode="Extended" AutoGenerateColumns="False" MaxHeight="600" SelectedItem="{Binding TaskManagerVM.SelectedProcess}">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid x:Name="Grid">
+                                        <Image Width="20" Height="20" Source="{Binding IconImage}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                        <DataGridTextColumn Header="CPU usage" Binding="{Binding CpuUsage}">
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Grid DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TaskManagerVM.CpuPercentage}"/>
+                                            <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Text="%"/>
+                                        </Grid>
+                                        <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                        Margin="5"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTextColumn.HeaderTemplate>
-                </DataGridTextColumn>
-                <DataGridTextColumn Header="Memory usage(MB)" Binding="{Binding WorkingSet, Converter={StaticResource BytesToMB}}">
-                    <DataGridTextColumn.HeaderTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <Grid DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding MemoryPercentage}"/>
-                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Text="%"/>
-                                </Grid>
-                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Memory usage(MB)" Binding="{Binding WorkingSet, Converter={StaticResource BytesToMB}}">
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Grid DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TaskManagerVM.MemoryPercentage}"/>
+                                            <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Text="%"/>
+                                        </Grid>
+                                        <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                        Margin="5"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Using GPU" Binding="{Binding IsUsingGpu}">
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Grid DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding TaskManagerVM.GpuPercentage}"/>
+                                            <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Text="%"/>
+                                        </Grid>
+                                        <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}" Margin="5"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                    <i:Interaction.Behaviors>
+                        <local:DataGridMultiSelectBehavior SelectedItems="{Binding TaskManagerVM.SelectedProcesses}"/>
+                    </i:Interaction.Behaviors>
+                </DataGrid>
+                <Button Content="Kill process" Height="30" VerticalAlignment="Top" Margin="5" Command="{Binding TaskManagerVM.KillProcessCommand}" CommandParameter="{Binding TaskManagerVM.SelectedProcess}"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="App launcher">
+            <ListBox x:Name="appsList" ItemsSource="{Binding AppLauncherVM.ApplicationViews}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border>
+                            <Border.InputBindings>
+                                <MouseBinding Gesture="LeftDoubleClick" 
+                                              Command="{Binding DataContext.AppLauncherVM.RunApplicationCommand, RelativeSource={RelativeSource FindAncestor,AncestorType=Window}}" 
+                                              CommandParameter="{Binding}"/>
+                            </Border.InputBindings>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <Image Width="20" Height="20" Source="{Binding IconBmp}" Margin="5"/>
+                                <TextBlock Text="{Binding Name}" Margin="5"/>
                             </StackPanel>
-                        </DataTemplate>
-                    </DataGridTextColumn.HeaderTemplate>
-                </DataGridTextColumn>
-                <DataGridTextColumn Header="Using GPU" Binding="{Binding IsUsingGpu}">
-                    <DataGridTextColumn.HeaderTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <Grid DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding GpuPercentage}"/>
-                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"  Text="%"/>
-                                </Grid>
-                                <TextBlock Text="{Binding Content, RelativeSource={RelativeSource Mode=TemplatedParent}}" Margin="5"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </DataGridTextColumn.HeaderTemplate>
-                </DataGridTextColumn>
-            </DataGrid.Columns>
-            <i:Interaction.Behaviors>
-                <local:DataGridMultiSelectBehavior SelectedItems="{Binding SelectedProcesses}"/>
-            </i:Interaction.Behaviors>
-        </DataGrid>
-        <Button Content="Kill process" Height="30" VerticalAlignment="Top" Margin="5" Command="{Binding KillProcessCommand}" CommandParameter="{Binding SelectedProcess}"/>
-    </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </TabItem>
+    </TabControl>
 </Window>

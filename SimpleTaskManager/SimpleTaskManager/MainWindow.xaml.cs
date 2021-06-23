@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿using Microsoft.Win32;
+using SimpleTaskManager.AppLauncher;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Windows;
 
 namespace SimpleTaskManager
 {
@@ -10,7 +14,7 @@ namespace SimpleTaskManager
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new TaskManagerViewModel();
+            this.DataContext = new MainViewModel();
         }
     }
 }

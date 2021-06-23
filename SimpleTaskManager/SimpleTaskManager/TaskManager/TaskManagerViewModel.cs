@@ -115,37 +115,44 @@ namespace SimpleTaskManager
             while(true)
             {
                 SetPercentageData();
-                Process[] gpuProcesses = PhysicalGPU.GetPhysicalGPUs().FirstOrDefault()?.GetActiveApplications();
-                Process[] processes = Process.GetProcesses();
-                foreach (var item in processes)
+                try
                 {
-                    var equalGpuProcess = gpuProcesses.FirstOrDefault(x => x.Id == item.Id);
-                    ProcessViewModel existingProcess;
-                    lock (_locker)
+                    Process[] gpuProcesses = PhysicalGPU.GetPhysicalGPUs().FirstOrDefault()?.GetActiveApplications();
+                    Process[] processes = Process.GetProcesses();
+                    foreach (var item in processes)
                     {
-                        existingProcess = RunningProcesses.FirstOrDefault(proc => proc.Id == item.Id);
-                    }
-                    if (existingProcess == null)
-                    {
-                        try
+                        var equalGpuProcess = gpuProcesses.FirstOrDefault(x => x.Id == item.Id);
+                        ProcessViewModel existingProcess;
+                        lock (_locker)
                         {
-                            item.EnableRaisingEvents = true;
-                            item.Exited += Process_Exited;
-                            App.Current.Dispatcher.Invoke(() =>
+                            existingProcess = RunningProcesses.FirstOrDefault(proc => proc.Id == item.Id);
+                        }
+                        if (existingProcess == null)
+                        {
+                            try
                             {
-                                RunningProcesses.Add(new ProcessViewModel(item));
-                            });
-                            
+                                item.EnableRaisingEvents = true;
+                                item.Exited += Process_Exited;
+                                App.Current.Dispatcher.Invoke(() =>
+                                {
+                                    RunningProcesses.Add(new ProcessViewModel(item));
+                                });
+
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"{item.ProcessName} denied request for enabling events!");
+                            }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            Console.WriteLine($"{item.ProcessName} denied request for enabling events!");
+                            existingProcess.Refresh(equalGpuProcess == null ? false : true);
                         }
                     }
-                    else
-                    {
-                        existingProcess.Refresh(equalGpuProcess == null ? false : true);
-                    }
+                }
+                catch(Exception ex)
+                {
+
                 }
                 Thread.Sleep(1000);
             }
