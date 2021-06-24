@@ -63,7 +63,7 @@ namespace SimpleTaskManager.AppLauncher
                     {
                         using (RegistryKey subkey = key.OpenSubKey(subkey_name))
                         {
-                            if (subkey.GetValue("DisplayName") != null && subkey.GetValue("InstallLocation") != null)
+                            if (subkey.GetValue("DisplayName") != null && subkey.GetValue("InstallLocation") != null && !String.IsNullOrEmpty(subkey.GetValue("InstallLocation").ToString()))
                             {
                                 ApplicationViews.Add(new ApplicationViewModel(subkey));
                             }

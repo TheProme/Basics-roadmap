@@ -97,6 +97,7 @@
       <DependentUpon>ApplicationFolderWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppLauncher\ApplicationViewModel.cs" />
+    <Compile Include="AppLauncher\DefaultIcons.cs" />
     <Compile Include="AppLauncher\ExecutableViewModel.cs" />
     <Compile Include="AppLauncher\SteamAppViewModel.cs" />
     <Compile Include="MainViewModel.cs" />

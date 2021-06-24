@@ -1,6 +1,7 @@
 ﻿using SimpleTaskManager.AppLauncher;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,11 +21,15 @@ namespace SimpleTaskManager
         private string ShowApplicationFolder_Handler(string path)
         {
             string filePath = string.Empty;
-            ApplicationFolderWindow folderWindow = new ApplicationFolderWindow(path);
-            folderWindow.ShowDialog();
-            if (folderWindow.DialogResult == true)
+            var filesInDir = Directory.GetFiles(path, "*.EXE", SearchOption.AllDirectories).ToList();
+            if (filesInDir.Count() > 0)
             {
-                filePath = folderWindow.SelectedFilePath;
+                ApplicationFolderWindow folderWindow = new ApplicationFolderWindow(filesInDir);
+                folderWindow.ShowDialog();
+                if (folderWindow.DialogResult == true)
+                {
+                    filePath = folderWindow.SelectedFilePath;
+                }
             }
             return filePath;
         }

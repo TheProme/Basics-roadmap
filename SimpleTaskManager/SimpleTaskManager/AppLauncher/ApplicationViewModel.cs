@@ -35,6 +35,10 @@ namespace SimpleTaskManager.AppLauncher
             {
                 IconBmp = ExtractIconFromFile(_appRegistryKey.GetValue("DisplayIcon").ToString());
             }
+            else
+            {
+                IconBmp = Imaging.CreateBitmapSourceFromHIcon(DefaultIcons.ApplicationIconLarge.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            }
         }
 
 

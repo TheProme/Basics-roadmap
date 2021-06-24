@@ -21,10 +21,10 @@ namespace SimpleTaskManager.AppLauncher
     public partial class ApplicationFolderWindow : Window
     {
         private ApplicationFolderViewModel ApplicationFolderVM;
-        public ApplicationFolderWindow(string path)
+        public ApplicationFolderWindow(List<string> filePaths)
         {
             InitializeComponent();
-            ApplicationFolderVM = new ApplicationFolderViewModel(path);
+            ApplicationFolderVM = new ApplicationFolderViewModel(filePaths);
             DataContext = ApplicationFolderVM;
         }
 

@@ -20,20 +20,11 @@ namespace SimpleTaskManager.AppLauncher
             set { _selectedExecutable = value; OnPropertyChanged(); }
         }
 
-        public ApplicationFolderViewModel(string path)
+        public ApplicationFolderViewModel(List<string> filePaths)
         {
-            if(!String.IsNullOrEmpty(path))
+            foreach (var path in filePaths)
             {
-                SetExecutablesFromPath(path);
-            }
-        }
-
-        private void SetExecutablesFromPath(string path)
-        {
-            var filePaths = Directory.GetFiles(path, "*.EXE", SearchOption.AllDirectories).ToList();
-            foreach (var file in filePaths)
-            {
-                ExecutableViews.Add(new ExecutableViewModel(file));
+                ExecutableViews.Add(new ExecutableViewModel(path));
             }
         }
     }
