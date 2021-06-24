@@ -15,8 +15,8 @@ namespace SimpleTaskManager.AppLauncher
         public delegate string ShowFolder(string path);
         public event ShowFolder ShowApplicationFolderEvent;
 
-        private const string STEAMAPP_KEY = @"SOFTWARE\Valve\Steam\Apps";
-        private const string REGISTRY_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+        private readonly string STEAMAPP_KEY = @"SOFTWARE\Valve\Steam\Apps";
+        private readonly string REGISTRY_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
         public ObservableCollection<ApplicationViewModel> ApplicationViews { get; set; } = new ObservableCollection<ApplicationViewModel>();
 
         private ICommand runApplicationCommand;
@@ -55,9 +55,9 @@ namespace SimpleTaskManager.AppLauncher
 
         private void SetApplicationsFromRegistry()
         {
-            try
+            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(REGISTRY_KEY))
             {
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(REGISTRY_KEY))
+                if(key != null)
                 {
                     foreach (string subkey_name in key.GetSubKeyNames())
                     {
@@ -70,11 +70,14 @@ namespace SimpleTaskManager.AppLauncher
                         }
                     }
                 }
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(STEAMAPP_KEY))
+            }
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(STEAMAPP_KEY))
+            {
+                if(key != null)
                 {
-                    foreach (string subkey_name in key?.GetSubKeyNames())
+                    foreach (string subkey_name in key.GetSubKeyNames())
                     {
-                        using (RegistryKey subkey = key?.OpenSubKey(subkey_name))
+                        using (RegistryKey subkey = key.OpenSubKey(subkey_name))
                         {
                             if (subkey.GetValue("Name") != null)
                             {
@@ -89,10 +92,6 @@ namespace SimpleTaskManager.AppLauncher
                         }
                     }
                 }
-            }
-            catch(Exception ex)
-            {
-                
             }
         }
     }

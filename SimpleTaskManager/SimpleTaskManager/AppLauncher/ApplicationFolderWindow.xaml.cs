@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace SimpleTaskManager.AppLauncher
 {
@@ -20,31 +20,15 @@ namespace SimpleTaskManager.AppLauncher
     /// </summary>
     public partial class ApplicationFolderWindow : Window
     {
+        private ApplicationFolderViewModel ApplicationFolderVM;
         public ApplicationFolderWindow(string path)
         {
-            DataContext = this;
             InitializeComponent();
-            if(!String.IsNullOrEmpty(path))
-            {
-                SetExecutablesFromPath(path);
-            }
+            ApplicationFolderVM = new ApplicationFolderViewModel(path);
+            DataContext = ApplicationFolderVM;
         }
 
-        public string FilePath
-        {
-            get { return (string)GetValue(FilePathProperty); }
-            set { SetValue(FilePathProperty, value); }
-        }
-
-        public static readonly DependencyProperty FilePathProperty =
-            DependencyProperty.Register("FilePath", typeof(string), typeof(ApplicationFolderWindow), new PropertyMetadata(null));
-
-
-
-        private void SetExecutablesFromPath(string path)
-        {
-            filesList.ItemsSource = Directory.GetFiles(path, "*.EXE", SearchOption.AllDirectories).ToList();
-        }
+        public string SelectedFilePath { get { return ApplicationFolderVM.SelectedExecutable.FullPath; } }
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {

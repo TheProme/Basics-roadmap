@@ -92,10 +92,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppLauncher\AppLauncherViewModel.cs" />
+    <Compile Include="AppLauncher\ApplicationFolderViewModel.cs" />
     <Compile Include="AppLauncher\ApplicationFolderWindow.xaml.cs">
       <DependentUpon>ApplicationFolderWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppLauncher\ApplicationViewModel.cs" />
+    <Compile Include="AppLauncher\ExecutableViewModel.cs" />
     <Compile Include="AppLauncher\SteamAppViewModel.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="TaskManager\BaseViewModel.cs" />

@@ -24,7 +24,7 @@ namespace SimpleTaskManager
             folderWindow.ShowDialog();
             if (folderWindow.DialogResult == true)
             {
-                filePath = folderWindow.FilePath;
+                filePath = folderWindow.SelectedFilePath;
             }
             return filePath;
         }

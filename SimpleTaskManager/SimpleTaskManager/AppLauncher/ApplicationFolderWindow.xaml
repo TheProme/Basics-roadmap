@@ -7,13 +7,22 @@
         MaxWidth="300" MaxHeight="480" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <StackPanel Background="White">
         <TextBlock Text="Select a file" HorizontalAlignment="Center" Margin="10" FontSize="24"/>
-        <ListBox Width="250" Height="300" Margin="10" x:Name="filesList" SelectedItem="{Binding FilePath}"/>
+        <ListBox Width="250" Height="300" Margin="10" x:Name="filesList" SelectedItem="{Binding SelectedExecutable}" ItemsSource="{Binding ExecutableViews}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding Icon}" Width="20" Height="20"/>
+                        <TextBlock Text="{Binding Name}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <Button x:Name="okButton" Content="Select" Width="60" Height="30" Margin="0 10 20 10" Click="okButton_Click">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding FilePath}" Value="{x:Null}">
+                            <DataTrigger Binding="{Binding SelectedExecutable}" Value="{x:Null}">
                                 <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>
