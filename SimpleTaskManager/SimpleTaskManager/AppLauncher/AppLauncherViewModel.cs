@@ -38,7 +38,7 @@ namespace SimpleTaskManager.AppLauncher
 
         private void RunApp(object application)
         {
-            if(application is SteamAppViewModel)
+            if (application is SteamAppViewModel)
             {
                 Process.Start($"steam://rungameid/{(application as SteamAppViewModel).GameID}");
             }
@@ -50,14 +50,15 @@ namespace SimpleTaskManager.AppLauncher
                     Process.Start(selectedFile);
                 }
             }
-            
+
         }
 
-        private void SetApplicationsFromRegistry()
+
+        private void ReadAppsFromRegistry(RegistryKey baseKey)
         {
-            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(REGISTRY_KEY))
+            using (RegistryKey key = baseKey.OpenSubKey(REGISTRY_KEY))
             {
-                if(key != null)
+                if (key != null)
                 {
                     foreach (string subkey_name in key.GetSubKeyNames())
                     {
@@ -71,6 +72,14 @@ namespace SimpleTaskManager.AppLauncher
                     }
                 }
             }
+        }
+
+        private void SetApplicationsFromRegistry()
+        {
+            RegistryKey registryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine,RegistryView.Registry64);
+            ReadAppsFromRegistry(registryKey);
+            registryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+            ReadAppsFromRegistry(registryKey);
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey(STEAMAPP_KEY))
             {
                 if(key != null)
