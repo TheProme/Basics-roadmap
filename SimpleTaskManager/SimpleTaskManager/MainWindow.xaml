@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimpleTaskManager"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-        x:Name="mainWindow" MaxHeight="700" MaxWidth="570">
+        x:Name="mainWindow" MaxHeight="730" MaxWidth="570" ResizeMode="NoResize">
 
     <Window.Resources>
         <local:BytesToMegabytesConverter x:Key="BytesToMB"/>
@@ -88,23 +88,33 @@
             </StackPanel>
         </TabItem>
         <TabItem Header="App launcher">
-            <ListBox x:Name="appsList" ItemsSource="{Binding AppLauncherVM.ApplicationViews}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border>
-                            <Border.InputBindings>
-                                <MouseBinding Gesture="LeftDoubleClick" 
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0">
+                    <TextBlock Margin="5" Text="Search:"/>
+                    <TextBox Margin="0 5" Text="{Binding AppLauncherVM.FilterText, UpdateSourceTrigger=PropertyChanged}"/>
+                </DockPanel>
+                <ListBox x:Name="appsList" ItemsSource="{Binding AppLauncherVM.FilteredAppViews}" Grid.Row="1">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border>
+                                <Border.InputBindings>
+                                    <MouseBinding Gesture="LeftDoubleClick" 
                                               Command="{Binding DataContext.AppLauncherVM.RunApplicationCommand, RelativeSource={RelativeSource FindAncestor,AncestorType=Window}}" 
                                               CommandParameter="{Binding}"/>
-                            </Border.InputBindings>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                <Image Width="20" Height="20" Source="{Binding IconBmp}" Margin="5"/>
-                                <TextBlock Text="{Binding Name}" Margin="5"/>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                                </Border.InputBindings>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                    <Image Width="20" Height="20" Source="{Binding IconBmp}" Margin="5"/>
+                                    <TextBlock Text="{Binding Name}" Margin="5"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
         </TabItem>
     </TabControl>
 </Window>

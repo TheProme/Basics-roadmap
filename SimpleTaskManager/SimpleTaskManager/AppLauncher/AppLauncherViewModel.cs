@@ -2,10 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace SimpleTaskManager.AppLauncher
@@ -19,6 +21,11 @@ namespace SimpleTaskManager.AppLauncher
         private readonly string REGISTRY_KEY = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
         public ObservableCollection<ApplicationViewModel> ApplicationViews { get; set; } = new ObservableCollection<ApplicationViewModel>();
 
+        public ICollectionView FilteredAppViews
+        {
+            get { return CollectionViewSource.GetDefaultView(ApplicationViews); }
+        }
+
         private ICommand runApplicationCommand;
         public ICommand RunApplicationCommand
         {
@@ -26,6 +33,26 @@ namespace SimpleTaskManager.AppLauncher
             {
                 return runApplicationCommand ??
                   (runApplicationCommand = new RelayCommand(obj => RunApp(obj), obj => obj != null));
+            }
+        }
+
+        private string _filterText;
+
+        public string FilterText
+        {
+            get { return _filterText; }
+            set 
+            { 
+                _filterText = value; 
+                OnPropertyChanged();
+                FilteredAppViews.Filter = app => {
+                    var item = app as ApplicationViewModel;
+                    if(item.Name.ToLower().Contains(_filterText.ToLower()))
+                    {
+                        return true;
+                    }
+                    return false;
+                };
             }
         }
 
@@ -54,9 +81,10 @@ namespace SimpleTaskManager.AppLauncher
         }
 
 
-        private void ReadAppsFromRegistry(RegistryKey baseKey)
+        private void ReadAppsFromRegistry(RegistryHive registryHive, RegistryView registryView)
         {
-            using (RegistryKey key = baseKey.OpenSubKey(REGISTRY_KEY))
+            RegistryKey registryKey = RegistryKey.OpenBaseKey(registryHive, registryView);
+            using (RegistryKey key = registryKey.OpenSubKey(REGISTRY_KEY))
             {
                 if (key != null)
                 {
@@ -76,10 +104,10 @@ namespace SimpleTaskManager.AppLauncher
 
         private void SetApplicationsFromRegistry()
         {
-            RegistryKey registryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine,RegistryView.Registry64);
-            ReadAppsFromRegistry(registryKey);
-            registryKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-            ReadAppsFromRegistry(registryKey);
+            ReadAppsFromRegistry(RegistryHive.LocalMachine, RegistryView.Registry64);
+            ReadAppsFromRegistry(RegistryHive.CurrentUser, RegistryView.Registry64);
+            ReadAppsFromRegistry(RegistryHive.LocalMachine, RegistryView.Registry32);
+            ReadAppsFromRegistry(RegistryHive.CurrentUser, RegistryView.Registry32);
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey(STEAMAPP_KEY))
             {
                 if(key != null)

@@ -21,10 +21,9 @@ namespace SimpleTaskManager
         private string ShowApplicationFolder_Handler(string path)
         {
             string filePath = string.Empty;
-            var filesInDir = Directory.GetFiles(path, "*.EXE", SearchOption.AllDirectories).ToList();
-            if (filesInDir.Count() > 0)
+            if (!String.IsNullOrEmpty(path))
             {
-                ApplicationFolderWindow folderWindow = new ApplicationFolderWindow(filesInDir);
+                ApplicationFolderWindow folderWindow = new ApplicationFolderWindow(path);
                 folderWindow.ShowDialog();
                 if (folderWindow.DialogResult == true)
                 {

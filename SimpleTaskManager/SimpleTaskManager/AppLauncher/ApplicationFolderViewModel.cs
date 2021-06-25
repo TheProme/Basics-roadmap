@@ -20,12 +20,25 @@ namespace SimpleTaskManager.AppLauncher
             set { _selectedExecutable = value; OnPropertyChanged(); }
         }
 
-        public ApplicationFolderViewModel(List<string> filePaths)
+        public ApplicationFolderViewModel(string installPath)
         {
-            foreach (var path in filePaths)
+            SetCollection(installPath);
+        }
+
+        private void SetCollection(string installPath)
+        {
+            Task.Run(() => 
             {
-                ExecutableViews.Add(new ExecutableViewModel(path));
-            }
+                Parallel.ForEach(
+                    Directory.GetFiles(installPath, "*.EXE", SearchOption.AllDirectories).AsEnumerable(),
+                    path =>
+                {
+                    App.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        ExecutableViews.Add(new ExecutableViewModel(path));
+                    }));
+                });
+            });
         }
     }
 }
