@@ -94,7 +94,11 @@ namespace SimpleTaskManager.AppLauncher
                         {
                             if (subkey.GetValue("DisplayName") != null && subkey.GetValue("InstallLocation") != null && !String.IsNullOrEmpty(subkey.GetValue("InstallLocation").ToString()))
                             {
-                                ApplicationViews.Add(new ApplicationViewModel(subkey));
+                                ApplicationViewModel appVM = new ApplicationViewModel(subkey);
+                                if(!ApplicationViews.Any(view => view.Path == appVM.Path))
+                                {
+                                    ApplicationViews.Add(appVM);
+                                }
                             }
                         }
                     }
