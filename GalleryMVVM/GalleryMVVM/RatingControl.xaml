@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="GalleryMVVM.RatingControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GalleryMVVM"
+             mc:Ignorable="d" >
+    <UserControl.Resources>
+        <Style x:Key="RatingStar" TargetType="{x:Type ToggleButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Path Name="starPath" Fill="Gray" Data="M 9,0 L 7,6 L 0,6 L 6,11 L 4,17 L 9,12 L 14,17 L 12,11 L 18,6 L 11,6 L 9,0"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="starPath" Property="Fill" Value="Gold"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="starPath" Property="Fill" Value="Gold"/>
+                                <Setter TargetName="starPath" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <StackPanel Orientation="Horizontal" x:Name="ratingPanel">
+        <ToggleButton FocusVisualStyle="{x:Null}" Tag ="1" Width="20" Height="20"  Style="{StaticResource RatingStar}" Click="RatingButtonClick_Handler"/>
+        <ToggleButton FocusVisualStyle="{x:Null}" Tag ="2" Width="20" Height="20"  Style="{StaticResource RatingStar}" Click="RatingButtonClick_Handler"/>
+        <ToggleButton FocusVisualStyle="{x:Null}" Tag ="3" Width="20" Height="20"  Style="{StaticResource RatingStar}" Click="RatingButtonClick_Handler"/>
+        <ToggleButton FocusVisualStyle="{x:Null}" Tag ="4" Width="20" Height="20"  Style="{StaticResource RatingStar}" Click="RatingButtonClick_Handler"/>
+        <ToggleButton FocusVisualStyle="{x:Null}" Tag ="5" Width="20" Height="20"  Style="{StaticResource RatingStar}" Click="RatingButtonClick_Handler"/>
+    </StackPanel>
+</UserControl>
