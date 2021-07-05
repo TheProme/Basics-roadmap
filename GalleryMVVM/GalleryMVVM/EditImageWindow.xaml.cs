@@ -16,15 +16,20 @@ using System.Windows.Shapes;
 namespace GalleryMVVM
 {
     /// <summary>
-    /// Interaction logic for AddPreviewWindow.xaml
+    /// Interaction logic for EditImageWindow.xaml
     /// </summary>
-    public partial class AddPreviewWindow : Window
+    public partial class EditImageWindow : Window
     {
-        public ObservableCollection<GalleryImage> PreviewImages { get; private set; }
-        public AddPreviewWindow(ObservableCollection<GalleryImage> images)
+        public ObservableCollection<GalleryImage> PreviewImages { get; private set; } = new ObservableCollection<GalleryImage>();
+
+        public EditImageWindow(List<GalleryImage> images)
         {
             InitializeComponent();
-            PreviewImages = images;
+            foreach (var item in images)
+            {
+                item.IsChangable = true;
+                PreviewImages.Add(item);
+            }
             this.DataContext = this;
         }
 

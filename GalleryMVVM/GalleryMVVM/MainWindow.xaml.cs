@@ -1,4 +1,7 @@
-﻿using Microsoft.Win32;
+﻿using GalleryMVVM.EF;
+using GalleryMVVM.EF.Interfaces;
+using Microsoft.Win32;
+using Ninject;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -12,27 +15,13 @@ namespace GalleryMVVM
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new GalleryViewModel();
+            IKernel kernel = new StandardKernel(new EntityInject());
+            this.DataContext = new GalleryViewModel(kernel.Get<IGalleryImageRepository>());
         }
 
-        private void addButton_Click(object sender, RoutedEventArgs e)
+        private void updateRatingButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.png) | *.jpg; *.jpeg; *.png";
-            openFileDialog.Multiselect = true;
-            if (openFileDialog.ShowDialog() == true)
-            {
-                ObservableCollection<GalleryImage> previewImages = new ObservableCollection<GalleryImage>();
-                foreach (var file in openFileDialog.FileNames)
-                {
-                    previewImages.Add(new GalleryImage { Path = file, Name = "untitled", IsChangable = true });
-                }
-                AddPreviewWindow previewWindow = new AddPreviewWindow(previewImages);
-                if (previewWindow.ShowDialog() == true)
-                {
-                    addButton.CommandParameter = previewWindow.PreviewImages;
-                }
-            }
+            popupStatus.IsOpen = true;
         }
     }
 }

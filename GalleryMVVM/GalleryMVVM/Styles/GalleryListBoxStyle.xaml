@@ -3,16 +3,46 @@
                     xmlns:local="clr-namespace:GalleryMVVM">
 
     <DataTemplate x:Key="GalleryItemTemplate" DataType="{x:Type local:GalleryImage}">
-        <local:ImageView/>
+        <local:ImageView Width="400"/>
     </DataTemplate>
 
+    <ControlTemplate x:Key="GalleryItemControlTemplate" TargetType="{x:Type ListBoxItem}">
+        <Border x:Name="itemBorder" 
+                BorderBrush="Black" BorderThickness="2" 
+                Background="Transparent" Padding="0" CornerRadius="10" Margin="5">
+            <ContentPresenter/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsSelected" Value="true">
+                <Setter Property="BorderBrush" TargetName="itemBorder" Value="#e8d20c"/>
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsMouseOver" Value="True"/>
+                    <Condition Property="IsSelected" Value="False"/>
+                </MultiTrigger.Conditions>
+                <Setter Property="Opacity" Value="0.8"/>
+                <Setter Property="Background" Value="Transparent"/>
+            </MultiTrigger>
+            <DataTrigger Binding="{Binding IsChangable}" Value="True">
+                <Setter Property="Opacity" Value="1"/>
+            </DataTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    
     <ItemsPanelTemplate x:Key="GalleryItemsPanel">
         <StackPanel Orientation="Horizontal"/>
     </ItemsPanelTemplate>
     
+    <Style x:Key="GalleryItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Template" Value="{StaticResource GalleryItemControlTemplate}"/>
+    </Style>
+    
     <Style x:Key="GalleryListBox" TargetType="{x:Type ListBox}">
+        <Setter Property="MaxHeight" Value="600"/>
         <Setter Property="ItemTemplate" Value="{StaticResource GalleryItemTemplate}"/>
         <Setter Property="ItemsPanel" Value="{StaticResource GalleryItemsPanel}"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource GalleryItemStyle}"/>
         <Setter Property="SelectionMode" Value="Multiple"/>
     </Style>
 

@@ -35,9 +35,12 @@ namespace GalleryMVVM.EF
             _galleryContext.SaveChanges();
         }
 
-        public void Delete(GalleryImage galleryImage)
+        public void Delete(List<GalleryImage> galleryImages)
         {
-            _galleryContext.Remove(_galleryContext.GalleryImages.FirstOrDefault(item => item.Path == galleryImage.Path));
+            foreach (var image in galleryImages)
+            {
+                _galleryContext.Remove(_galleryContext.GalleryImages.FirstOrDefault(item => item.Path == image.Path));
+            }
             _galleryContext.SaveChanges();
         }
 

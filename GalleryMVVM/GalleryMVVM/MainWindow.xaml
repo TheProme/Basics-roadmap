@@ -4,19 +4,42 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GalleryMVVM"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
-        Title="MainWindow" MinHeight="700">
-    <Grid MinHeight="600">
+        Title="MainWindow" MinHeight="500">
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Height" Value="40"/>
+        </Style>
+    </Window.Resources>
+    <Grid MinHeight="500">
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition Height="0.1*"/>
+            <RowDefinition Height="0.15*"/>
         </Grid.RowDefinitions>
         <DockPanel>
-            <ListBox ItemsSource="{Binding GalleryImages}" SelectedItem="{Binding CurrentImage}" Style="{StaticResource GalleryListBox}"/>
+            <ListBox ItemsSource="{Binding GalleryImages}" Style="{StaticResource GalleryListBox}">
+                <i:Interaction.Behaviors>
+                    <local:MultiselectBehavior SelectedItems="{Binding CurrentImages}"/>
+                </i:Interaction.Behaviors>
+            </ListBox>
         </DockPanel>
-        <StackPanel Grid.Row="1">
-
-            <Button x:Name="addButton" Content="Add images" Command="{Binding AddImages}" Click="addButton_Click"/>
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <Popup x:Name="popupStatus" StaysOpen="False" Placement="Center" AllowsTransparency="True">
+                <TextBlock TextWrapping="Wrap" Text="Rating was updated" FontSize="16" Background="#e8d20c" Opacity="0.8"/>
+            </Popup>
+            <Button x:Name="updateRatingButton" Content="Save rating" Click="updateRatingButton_Click" Command="{Binding SaveRating}" CommandParameter="{Binding GalleryImages}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="addButton" Content="Add images" Command="{Binding AddImages}"/>
+                <Button Grid.Column="1" x:Name="editButton" Content="Edit images" Command="{Binding EditImages}" CommandParameter="{Binding CurrentImages}"/>
+                <Button Grid.Column="2" x:Name="deleteButton" Content="Delete images" Command="{Binding DeleteImages}" CommandParameter="{Binding CurrentImages}"/>
+            </Grid>
         </StackPanel>
     </Grid>
 </Window>

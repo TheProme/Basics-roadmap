@@ -8,7 +8,7 @@ namespace GalleryMVVM.EF.Interfaces
     {
         List<GalleryImage> GetAll();
         GalleryImage GetById(int id);
-        void Add(List<GalleryImage> galleryImage);
-        void Delete(GalleryImage galleryImage);
+        void Add(List<GalleryImage> galleryImages);
+        void Delete(List<GalleryImage> galleryImages);
     }
 }
