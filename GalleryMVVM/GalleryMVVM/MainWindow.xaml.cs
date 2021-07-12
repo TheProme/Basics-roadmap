@@ -1,27 +1,19 @@
-﻿using GalleryMVVM.EF;
-using GalleryMVVM.EF.Interfaces;
-using Microsoft.Win32;
+﻿using GalleryDAL.EF;
+using GalleryMVVM.MVVM.ViewModels;
 using Ninject;
-using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace GalleryMVVM
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainWin.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
-            IKernel kernel = new StandardKernel(new EntityInject());
-            this.DataContext = new GalleryViewModel(kernel.Get<IGalleryImageRepository>());
-        }
-
-        private void updateRatingButton_Click(object sender, RoutedEventArgs e)
-        {
-            popupStatus.IsOpen = true;
+            this.DataContext = new MainViewModel(new GalleryService(KernelManager.Kernel.Get<UnitOfWork>()));
         }
     }
 }

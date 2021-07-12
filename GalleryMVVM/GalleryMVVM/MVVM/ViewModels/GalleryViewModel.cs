@@ -1,164 +1,138 @@
-﻿using GalleryMVVM.EF.Interfaces;
+﻿using GalleryDAL.EF.Models;
 using Microsoft.Win32;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace GalleryMVVM
 {
 	public class GalleryViewModel : BaseViewModel
     {
-		private IGalleryImageRepository GalleryRep;
+		private GalleryService DALService;
 
-		public GalleryViewModel(IGalleryImageRepository galleryRepository)
+		public GalleryViewModel(GalleryService dalService)
 		{
-			GalleryRep = galleryRepository;
-			ReadImagesFromRepository(GalleryRep);
+			DALService = dalService;
+			ReadImagesFromRepository();
 		}
 
-		private void ReadImagesFromRepository(IGalleryImageRepository repository)
+		private void ReadImagesFromRepository()
 		{
-			foreach (var item in repository.GetAll())
+			ClearImages();
+			foreach (var item in DALService.GetAll())
 			{
+				item.DeleteImageEvent += DeleteImageHandler;
+				item.IsFavorite = true;
 				GalleryImages.Add(item);
 			}
 		}
 
-		public ObservableCollection<GalleryImage> GalleryImages { get; set; } = new ObservableCollection<GalleryImage>();
-
-		private ObservableCollection<GalleryImage> _currentImages = new ObservableCollection<GalleryImage>();
-
-		public ObservableCollection<GalleryImage> CurrentImages
+		private void DeleteImageHandler(GalleryImageViewModel imageToDelete)
 		{
-			get { return _currentImages; }
-			set { _currentImages = value; OnPropertyChanged(); }
+			RemoveFromCollection(imageToDelete);
+			DALService.DeleteData(imageToDelete);
+			DALService.SaveChanges();
 		}
 
-		private ICommand _addImages;
-		public ICommand AddImages
+		public void SetImagesFromList(List<string> imagePaths)
 		{
-			get
+			ClearImages();
+			foreach (var item in imagePaths)
 			{
-				return _addImages ?? 
-					(_addImages = new ParametrizedCommand(obj =>
-					{
-						OpenPreviewWindow();
-					}));
-			}
-		}
-
-		private ICommand _deleteImages;
-		public ICommand DeleteImages
-		{
-			get
-			{
-				return _deleteImages ??
-					(_deleteImages = new ParametrizedCommand(obj =>
-					{
-						if (obj != null)
-							DeleteSelectedImages((obj as ObservableCollection<GalleryImage>).ToList());
-					}, obj => obj != null && (obj as ObservableCollection<GalleryImage>).Count > 0));
-			}
-		}
-
-		private ICommand _editImages;
-		public ICommand EditImages
-		{
-			get
-			{
-				return _editImages ??
-					(_editImages = new ParametrizedCommand(obj =>
-					{
-						if (obj != null)
-							EditSelectedImages((obj as ObservableCollection<GalleryImage>).ToList());
-					}, obj => obj != null && (obj as ObservableCollection<GalleryImage>).Count > 0));
-			}
-		}
-
-		private ICommand _saveRating;
-		public ICommand SaveRating
-		{
-			get
-			{
-				return _saveRating ??
-					(_saveRating = new ParametrizedCommand(obj =>
-					{
-						SaveImagesRating();
-					}, obj => obj != null && (obj as ObservableCollection<GalleryImage>).Count > 0));
-			}
-		}
-
-		private void OpenPreviewWindow(List<GalleryImage> previewImages = null)
-		{
-			if(previewImages == null)
-			{
-				OpenFileDialog openFileDialog = new OpenFileDialog();
-				openFileDialog.Filter = "Image files (*.jpg, *.jpeg, *.png) | *.jpg; *.jpeg; *.png";
-				openFileDialog.Multiselect = true;
-				if (openFileDialog.ShowDialog() == true)
+				var existingImage = DALService.GetImageByPath(item);
+				if (existingImage != null)
 				{
-					previewImages = new List<GalleryImage>();
-					foreach (var file in openFileDialog.FileNames)
-					{
-						previewImages.Add(new GalleryImage { Path = file, Name = "untitled"});
-					}
-					EditImageWindow previewWindow = new EditImageWindow(previewImages);
-					if (previewWindow.ShowDialog() == true)
-					{
-						AddImagesToGallery(previewWindow.PreviewImages.ToList());
-					}
-				}
-			}
-			else
-			{
-				EditImageWindow previewWindow = new EditImageWindow(previewImages);
-				if (previewWindow.ShowDialog() == true)
-				{
-					AddImagesToGallery(previewWindow.PreviewImages.ToList());
-				}
-			}
-		}
-
-		private void AddImagesToGallery(List<GalleryImage> images)
-		{
-			foreach (var image in images)
-			{
-				image.IsChangable = false;
-				if (!GalleryImages.Any(img => img.Path == image.Path))
-				{
-					GalleryImages.Add(image);
+					existingImage.DeleteImageEvent += DeleteImageHandler;
+					existingImage.IsFavorite = true;
+					GalleryImages.Add(existingImage);
 				}
 				else
 				{
-					var existingItem = GalleryImages.FirstOrDefault(img => img.Path == image.Path);
-					var index = GalleryImages.IndexOf(existingItem);
-					GalleryImages.Remove(existingItem);
-					GalleryImages.Insert(index, image);
+					GalleryImages.Add(new GalleryImageViewModel(new GalleryImage { Path = item }));
 				}
 			}
-			GalleryRep.Add(images.ToList());
 		}
 
-		private void DeleteSelectedImages(List<GalleryImage> images)
+
+		private void RemoveFromCollection(GalleryImageViewModel imageToDelete)
 		{
-			foreach (var item in images)
+			imageToDelete.DeleteImageEvent -= DeleteImageHandler;
+			imageToDelete.DataChangedEvent -= ImageDataChangedHandler;
+			if (GalleryImages.All(img=> img.IsFavorite))
 			{
-				GalleryImages.Remove(item);
+				GalleryImages.Remove(imageToDelete);
 			}
-			GalleryRep.Delete(images);
+			else
+			{
+				var index = GalleryImages.IndexOf(imageToDelete);
+				GalleryImages.Remove(imageToDelete);
+				GalleryImages.Insert(index, new GalleryImageViewModel(new GalleryImage { Path = imageToDelete.Path }));
+			}
+			
 		}
 
-		private void EditSelectedImages(List<GalleryImage> images)
+		private void ClearImages()
 		{
-			OpenPreviewWindow(images);
+			foreach (var image in GalleryImages)
+			{
+				if(image.IsFavorite)
+				{
+					image.DeleteImageEvent -= DeleteImageHandler;
+				}
+				image.DataChangedEvent -= ImageDataChangedHandler;
+			}
+			GalleryImages.Clear();
 		}
 
-		private void SaveImagesRating()
+		public ObservableCollection<GalleryImageViewModel> GalleryImages { get; set; } = new ObservableCollection<GalleryImageViewModel>();
+
+		private GalleryImageViewModel _currentImage;
+
+		public GalleryImageViewModel CurrentImage
 		{
-			GalleryRep.Add(GalleryImages.ToList());
-			CurrentImages.Clear();
+			get => _currentImage; 
+			set 
+			{ 
+				if(_currentImage != null)
+				{
+					_currentImage.DataChangedEvent -= ImageDataChangedHandler;
+				}
+				_currentImage = value;
+				if (_currentImage != null)
+				{
+					_currentImage.DataChangedEvent += ImageDataChangedHandler;
+				}
+				OnPropertyChanged(); 
+			}
+		}
+
+		private void ImageDataChangedHandler()
+		{
+			if(DALService.GetImageByPath(CurrentImage.Path) != null)
+			{
+				DALService.UpdateData(CurrentImage);
+			}
+			else
+			{
+				DALService.AddData(CurrentImage);
+			}
+			CurrentImage.IsFavorite = true;
+			DALService.SaveChanges();
+		}
+
+		private ICommand _showFavorites;
+		public ICommand ShowFavorites
+		{
+			get
+			{
+				return _showFavorites ?? (_showFavorites = new ParametrizedCommand(obj =>
+				{
+					ReadImagesFromRepository();
+				}));
+			}
 		}
 	}
 }

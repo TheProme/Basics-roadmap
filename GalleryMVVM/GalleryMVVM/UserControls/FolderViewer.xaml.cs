@@ -1,8 +1,8 @@
-﻿using System;
+﻿using GalleryMVVM.MVVM.Models;
+using GalleryMVVM.MVVM.ViewModels;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,12 +16,11 @@ using System.Windows.Shapes;
 namespace GalleryMVVM
 {
     /// <summary>
-    /// Interaction logic for ImageView.xaml
+    /// Interaction logic for FolderViewer.xaml
     /// </summary>
-    public partial class ImageView : UserControl
+    public partial class FolderViewer : UserControl
     {
-
-        public ImageView()
+        public FolderViewer()
         {
             InitializeComponent();
         }

@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="GalleryMVVM.ImagePreview"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:local="clr-namespace:GalleryMVVM">
+    <UserControl.Resources>
+        <local:UriToBitmapImageConverter x:Key="uriToBitmapConverter"/>
+        <BitmapImage x:Key="Placeholder" UriSource="pack://application:,,,/Icons/placeholder.png"/>
+    </UserControl.Resources>
+    <Grid>
+        <Border Width="20" Height="20" Background="WhiteSmoke" BorderThickness="1" BorderBrush="Black" CornerRadius="5" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-10 -5">
+            <Image Width="12" Height="12" Source="pack://application:,,,/Icons/saved.png"/>
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsFavorite}" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
+        <Button Style="{StaticResource DeleteImageButtonStyle}" Command="{Binding DeleteImageCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="-10 -5"/>
+        <StackPanel Width="200" Height="200">
+            <Image Height="160" Source="{Binding Path, Converter={StaticResource uriToBitmapConverter}, FallbackValue={StaticResource Placeholder}, IsAsync=True}"/>
+            <TextBlock Text="{Binding Name}" TextAlignment="Center"/>
+            <local:RatingControl RatingValue="{Binding Rating, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <local:RatingControl.Style>
+                    <Style TargetType="{x:Type local:RatingControl}">
+                        <Style.Triggers>
+                            <Trigger Property="RatingValue" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </local:RatingControl.Style>
+            </local:RatingControl>
+        </StackPanel>
+        <Button Style="{StaticResource FullscreenImageButtonStyle}" Command="{Binding ViewFullSize}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="-10 -5"/>
+    </Grid>
+</UserControl>

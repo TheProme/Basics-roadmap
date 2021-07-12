@@ -66,7 +66,6 @@ namespace GalleryMVVM
         {
             ToggleButton button = sender as ToggleButton;
             RatingValue = Int32.Parse((String)button.Tag);
-
         }
     }
 }

@@ -1,11 +1,12 @@
-﻿using GalleryMVVM.EF.Configurations;
+﻿using GalleryDAL.EF.Configurations;
+using GalleryDAL.EF.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace GalleryMVVM.EF
+namespace GalleryDAL.EF
 {
     public class GalleryContext: DbContext
     {

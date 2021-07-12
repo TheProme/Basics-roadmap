@@ -7,15 +7,32 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="UserControls\" />
-    <Folder Include="Styles\" />
+    <None Remove="Icons\blackStar.png" />
+    <None Remove="Icons\deleteBin.png" />
+    <None Remove="Icons\folderIcon.png" />
+    <None Remove="Icons\fullscreenIco.png" />
+    <None Remove="Icons\placeholder.png" />
+    <None Remove="Icons\saved.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.7" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
     <PackageReference Include="Ninject" Version="3.3.4" />
-    <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GalleryDAL\GalleryDAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\blackStar.png" />
+    <Resource Include="Icons\deleteBin.png" />
+    <Resource Include="Icons\folderIcon.png" />
+    <Resource Include="Icons\fullscreenIco.png" />
+    <Resource Include="Icons\placeholder.png" />
+    <Resource Include="Icons\saved.png" />
   </ItemGroup>
 
 </Project>

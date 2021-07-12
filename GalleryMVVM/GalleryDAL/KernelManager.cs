@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GalleryMVVM.EF
+namespace GalleryDAL.EF
 {
     public sealed class KernelManager
     {
-        private IKernel kernel;
+        private static IKernel kernel;
 
-        public IKernel Kernel
+        public static IKernel Kernel
         {
             get
             {

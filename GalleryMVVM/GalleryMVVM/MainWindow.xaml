@@ -4,42 +4,94 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GalleryMVVM"
-        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-        Title="MainWindow" MinHeight="500">
-    <Window.Resources>
-        <Style TargetType="{x:Type Button}">
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="Height" Value="40"/>
-        </Style>
-    </Window.Resources>
-    <Grid MinHeight="500">
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="0.15*"/>
-        </Grid.RowDefinitions>
-        <DockPanel>
-            <ListBox ItemsSource="{Binding GalleryImages}" Style="{StaticResource GalleryListBox}">
-                <i:Interaction.Behaviors>
-                    <local:MultiselectBehavior SelectedItems="{Binding CurrentImages}"/>
-                </i:Interaction.Behaviors>
-            </ListBox>
-        </DockPanel>
-        <StackPanel Grid.Row="1" Orientation="Vertical">
-            <Popup x:Name="popupStatus" StaysOpen="False" Placement="Center" AllowsTransparency="True">
-                <TextBlock TextWrapping="Wrap" Text="Rating was updated" FontSize="16" Background="#e8d20c" Opacity="0.8"/>
-            </Popup>
-            <Button x:Name="updateRatingButton" Content="Save rating" Click="updateRatingButton_Click" Command="{Binding SaveRating}" CommandParameter="{Binding GalleryImages}"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Button x:Name="addButton" Content="Add images" Command="{Binding AddImages}"/>
-                <Button Grid.Column="1" x:Name="editButton" Content="Edit images" Command="{Binding EditImages}" CommandParameter="{Binding CurrentImages}"/>
-                <Button Grid.Column="2" x:Name="deleteButton" Content="Delete images" Command="{Binding DeleteImages}" CommandParameter="{Binding CurrentImages}"/>
+        Title="MainWin" MinHeight="450" MinWidth="800" WindowState="Maximized">
+    <Grid x:Name="mainGrid">
+        <Grid Grid.Row="1" Background="{StaticResource MainBackgroundColor}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*" MinWidth="100"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="0.2*"/>
+            </Grid.ColumnDefinitions>
+            <!--#region Folders-->
+            <GridSplitter Grid.Column="1" ShowsPreview="False" Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <!--#region MyCollection-->
+                <Button x:Name="favoritesButton">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="Icons/blackStar.png" Width="20" Height="20"/>
+                        <TextBlock Text="My favorites" Margin="5"/>
+                    </StackPanel>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <i:InvokeCommandAction Command="{Binding FolderViewModel.DeselectFolder}"/>
+                            <i:InvokeCommandAction Command="{Binding GalleryViewModel.ShowFavorites}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </Button>
+                <!--#endregion-->
+                <!--#region FolderView-->
+                <DockPanel Grid.Row="1">
+                    <local:FolderViewer DataContext="{Binding FolderViewModel}"/>
+                </DockPanel>
+                <!--#endregion-->
             </Grid>
-        </StackPanel>
+            <!--#endregion-->
+            <!--#region ImageView-->
+            <Grid Grid.Column="2">
+                <local:ImageList DataContext="{Binding GalleryViewModel}"/>
+            </Grid>
+            <!--#endregion-->
+            <!--#region ImageData-->
+            <Grid Grid.Column="3">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="100"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel>
+                        <StackPanel.Style>
+                            <Style TargetType="{x:Type StackPanel}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding GalleryViewModel.CurrentImage}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock Text="Image info" TextAlignment="Center"/>
+                        <DockPanel Margin="5">
+                            <TextBlock Text="Name:"/>
+                            <TextBox IsReadOnly="True" Margin="5 0" Text="{Binding GalleryViewModel.CurrentImage.Name}"/>
+                        </DockPanel>
+                        <DockPanel Margin="5">
+                            <TextBlock Text="Path:"/>
+                            <TextBox IsReadOnly="True" Margin="5 0" Text="{Binding GalleryViewModel.CurrentImage.Path}"/>
+                        </DockPanel>
+                        <StackPanel Margin="5">
+                            <TextBlock Text="Description:" TextAlignment="Center"/>
+                            <TextBox MaxHeight="150" Height="150" Text="{Binding GalleryViewModel.CurrentImage.Description}" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                        </StackPanel>
+                        <DockPanel Margin="5">
+                            <TextBlock Text="Rating:"/>
+                            <local:RatingControl RatingValue="{Binding GalleryViewModel.CurrentImage.Rating, Mode=TwoWay}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="RatingValueChanged">
+                                        <i:InvokeCommandAction Command="{Binding GalleryViewModel.SaveRating}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </local:RatingControl>
+                        </DockPanel>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+            <!--#endregion-->
+        </Grid>
     </Grid>
 </Window>
