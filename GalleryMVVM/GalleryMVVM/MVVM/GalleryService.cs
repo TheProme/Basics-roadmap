@@ -29,16 +29,15 @@ namespace GalleryMVVM
         }
         private List<GalleryImageViewModel> CastModelsToVM(IEnumerable<GalleryImage> imageModels)
         {
-            if(imageModels != null && imageModels.Count() > 0)
+            List<GalleryImageViewModel> viewModels = new List<GalleryImageViewModel>();
+            if (imageModels != null && imageModels.Count() > 0)
             {
-                List<GalleryImageViewModel> viewModels = new List<GalleryImageViewModel>();
                 foreach (var item in imageModels)
                 {
                     viewModels.Add(CastModelToVM(item));
                 }
-                return viewModels;
             }
-            return null;
+            return viewModels;
         }
 
         private GalleryImageViewModel CastModelToVM(GalleryImage imageModel)
