@@ -12,7 +12,7 @@ namespace GalleryMVVM
 	public class GalleryViewModel : BaseViewModel
     {
 		private GalleryService DALService;
-
+		private PreviewWindow _previewWindow;
 		public GalleryViewModel(GalleryService dalService)
 		{
 			DALService = dalService;
@@ -25,9 +25,20 @@ namespace GalleryMVVM
 			foreach (var item in DALService.GetAll())
 			{
 				item.DeleteImageEvent += DeleteImageHandler;
+				item.FullSizeClickEvent += FullSizeClickHandler;
 				item.IsFavorite = true;
 				GalleryImages.Add(item);
 			}
+		}
+
+		private void FullSizeClickHandler(GalleryImageViewModel currentImage)
+		{
+			if(_previewWindow != null)
+			{
+				_previewWindow.Close();
+			}
+			_previewWindow = new PreviewWindow(GalleryImages, currentImage);
+			_previewWindow.Show();
 		}
 
 		private void DeleteImageHandler(GalleryImageViewModel imageToDelete)
@@ -46,12 +57,15 @@ namespace GalleryMVVM
 				if (existingImage != null)
 				{
 					existingImage.DeleteImageEvent += DeleteImageHandler;
+					existingImage.FullSizeClickEvent += FullSizeClickHandler;
 					existingImage.IsFavorite = true;
 					GalleryImages.Add(existingImage);
 				}
 				else
 				{
-					GalleryImages.Add(new GalleryImageViewModel(new GalleryImage { Path = item }));
+					GalleryImageViewModel newImage = new GalleryImageViewModel(new GalleryImage { Path = item });
+					newImage.FullSizeClickEvent += FullSizeClickHandler;
+					GalleryImages.Add(newImage);
 				}
 			}
 		}
@@ -61,6 +75,7 @@ namespace GalleryMVVM
 		{
 			imageToDelete.DeleteImageEvent -= DeleteImageHandler;
 			imageToDelete.DataChangedEvent -= ImageDataChangedHandler;
+			imageToDelete.FullSizeClickEvent -= FullSizeClickHandler;
 			if (GalleryImages.All(img=> img.IsFavorite))
 			{
 				GalleryImages.Remove(imageToDelete);
@@ -83,6 +98,7 @@ namespace GalleryMVVM
 					image.DeleteImageEvent -= DeleteImageHandler;
 				}
 				image.DataChangedEvent -= ImageDataChangedHandler;
+				image.FullSizeClickEvent -= FullSizeClickHandler;
 			}
 			GalleryImages.Clear();
 		}

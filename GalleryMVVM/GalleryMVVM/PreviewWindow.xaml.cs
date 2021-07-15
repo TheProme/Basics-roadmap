@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,10 +18,10 @@ namespace GalleryMVVM
     /// </summary>
     public partial class PreviewWindow : Window
     {
-        public PreviewWindow(GalleryImageViewModel galleryImage)
+        public PreviewWindow(ObservableCollection<GalleryImageViewModel> images, GalleryImageViewModel currentImage)
         {
             InitializeComponent();
-            this.DataContext = galleryImage;
+            this.DataContext = new PreviewWindowViewModel(images, currentImage);
         }
     }
 }

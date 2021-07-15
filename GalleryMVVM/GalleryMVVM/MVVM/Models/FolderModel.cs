@@ -7,8 +7,39 @@ namespace GalleryMVVM.MVVM.Models
 {
     public class FolderModel
     {
-        public ObservableCollection<FolderModel> Subfolders { get; set; } = new ObservableCollection<FolderModel>();
-        public string DirectoryPath { get; set; }
+        public FolderModel()
+        {
+            if(this is DummyFolder)
+            {
+                return;
+            }
+            
+        }
+        public ObservableCollection<FolderModel> Subfolders { get; private set; } = new ObservableCollection<FolderModel>();
+
+        private string _directoryPath;
+        public string DirectoryPath 
+        {
+            get => _directoryPath;
+            set
+            {
+                _directoryPath = value;
+                if(_directoryPath != null)
+                {
+                    try
+                    {
+                        if (Directory.GetDirectories(DirectoryPath, "", SearchOption.TopDirectoryOnly).Length > 1)
+                        {
+                            Subfolders.Add(new DummyFolder("dummy"));
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+
+                    }
+                }
+            }
+        }
         public bool IsSelected { get; set; }
 
         private string _name;
@@ -29,33 +60,31 @@ namespace GalleryMVVM.MVVM.Models
             }
         }
 
-        private void SetSubfolders()
+        public void SetSubfolders()
         {
-            if (Subfolders.Count < 1)
+            Subfolders.Clear();
+            Task.Run(() =>
             {
-                Task.Run(() =>
+                string[] directories = null;
+                try
                 {
-                    string[] directories = null;
-                    try
+                    directories = Directory.GetDirectories(DirectoryPath, "", SearchOption.TopDirectoryOnly);
+                }
+                catch (Exception ex)
+                {
+                    //usually unauthorized exception
+                }
+                if (directories != null)
+                {
+                    foreach (var directory in directories)
                     {
-                        directories = Directory.GetDirectories(DirectoryPath, "", SearchOption.TopDirectoryOnly);
-                    }
-                    catch (Exception ex)
-                    {
-                        //usually unauthorized exception
-                    }
-                    if (directories != null)
-                    {
-                        foreach (var directory in directories)
+                        App.Current.Dispatcher.Invoke(() =>
                         {
-                            App.Current.Dispatcher.Invoke(() =>
-                            {
-                                Subfolders.Add(new FolderModel { DirectoryPath = directory });
-                            });
-                        }
+                            Subfolders.Add(new FolderModel { DirectoryPath = directory });
+                        });
                     }
-                });
-            }
+                }
+            });
         }
         
     }

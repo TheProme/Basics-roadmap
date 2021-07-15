@@ -104,8 +104,7 @@ namespace GalleryMVVM.MVVM.ViewModels
                     {
                         try
                         {
-
-                            Folders.Add(new FolderModel { DirectoryPath = Directory.GetDirectoryRoot(drive.RootDirectory.FullName), Name = drive.RootDirectory.Name });
+                            Folders.Add(new FolderModel { DirectoryPath = Directory.GetDirectoryRoot(drive.RootDirectory.FullName), Name = drive.Name });
                         }
                         catch (Exception ex)
                         {

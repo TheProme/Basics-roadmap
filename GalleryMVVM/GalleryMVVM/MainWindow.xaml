@@ -80,13 +80,7 @@
                         </StackPanel>
                         <DockPanel Margin="5">
                             <TextBlock Text="Rating:"/>
-                            <local:RatingControl RatingValue="{Binding GalleryViewModel.CurrentImage.Rating, Mode=TwoWay}">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="RatingValueChanged">
-                                        <i:InvokeCommandAction Command="{Binding GalleryViewModel.SaveRating}"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </local:RatingControl>
+                            <local:RatingControl RatingValue="{Binding GalleryViewModel.CurrentImage.Rating, Mode=TwoWay}"/>
                         </DockPanel>
                     </StackPanel>
                 </Grid>

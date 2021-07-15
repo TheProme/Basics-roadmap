@@ -3,7 +3,11 @@
                     xmlns:local="clr-namespace:GalleryMVVM"
                     xmlns:DAL="clr-namespace:GalleryDAL.EF.Models;assembly=GalleryDAL">
 
-    <SolidColorBrush x:Key="MainBackgroundColor" Color="LightGray"/>
+    <SolidColorBrush x:Key="MainBackgroundColor" Color="White"/>
+    <SolidColorBrush x:Key="ForegroundColor" Color="Black"/>
+
+    <local:UriToBitmapImageConverter x:Key="uriToBitmapConverter"/>
+    <BitmapImage x:Key="Placeholder" UriSource="pack://application:,,,/Icons/placeholder.png"/>
 
     <DataTemplate x:Key="ImageItemTemplate" DataType="{x:Type DAL:GalleryImage}">
         <local:ImagePreview/>
@@ -15,13 +19,13 @@
 
     <ControlTemplate x:Key="ImageItemControlTemplate" TargetType="{x:Type ListBoxItem}">
         <Border x:Name="itemBorder" 
-                BorderBrush="DarkGray" BorderThickness="1" 
+                BorderBrush="LightGray" BorderThickness="1" 
                 Background="Transparent" CornerRadius="10" Margin="5" Padding="5 0 5 0">
             <ContentPresenter/>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsSelected" Value="true">
-                <Setter Property="BorderBrush" TargetName="itemBorder" Value="White"/>
+                <Setter Property="BorderBrush" TargetName="itemBorder" Value="DarkGray"/>
             </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>

@@ -16,6 +16,10 @@ namespace GalleryMVVM
 		public delegate void DeleteImage(GalleryImageViewModel imageToDelete);
 		public event DeleteImage DeleteImageEvent;
 
+		public delegate void FullSizeClick(GalleryImageViewModel currentImage);
+		public event FullSizeClick FullSizeClickEvent;
+
+
 		private GalleryImage GalleryImage;
 		public GalleryImageViewModel(GalleryImage imageModel)
 		{
@@ -88,7 +92,7 @@ namespace GalleryMVVM
 		{
 			get => _viewFullSize ?? (_viewFullSize = new ParametrizedCommand(obj =>
 			{
-				new PreviewWindow(this).Show();
+				FullSizeClickEvent?.Invoke(this);
 			}));
 		}
 

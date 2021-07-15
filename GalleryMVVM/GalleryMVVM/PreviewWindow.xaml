@@ -4,6 +4,31 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GalleryMVVM"
-        Title="PreviewWindow" WindowState="Maximized">
-    <Image Source="{Binding Path}"/>
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        Title="PreviewWindow" WindowState="Maximized" Foreground="{StaticResource ForegroundColor}">
+    <Grid Background="{StaticResource MainBackgroundColor}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="60"/>
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" Command="{Binding PreviousImage}">
+            <Image Source="pack://application:,,,/Icons/Arrow-Left-icon.png"/>
+        </Button>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="0.15*"/>
+            </Grid.RowDefinitions>
+            <Image Source="{Binding CurrentImage.Path}"/>
+            <ListBox Margin="5" Grid.Row="1" ItemsSource="{Binding Images}" SelectedItem="{Binding CurrentImage}" Style="{StaticResource PreviewListStyle}">
+                <i:Interaction.Behaviors>
+                    <local:ScrollIntoViewListboxBehavior/>
+                </i:Interaction.Behaviors>
+            </ListBox>
+        </Grid>
+        <Button Grid.Column="2" Command="{Binding NextImage}">
+            <Image Source="pack://application:,,,/Icons/Arrow-Right-icon.png"/>
+        </Button>
+    </Grid>
 </Window>

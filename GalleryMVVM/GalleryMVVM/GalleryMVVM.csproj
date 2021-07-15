@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Icons\Arrow-Left-icon.png" />
+    <None Remove="Icons\Arrow-Right-icon.png" />
     <None Remove="Icons\blackStar.png" />
     <None Remove="Icons\deleteBin.png" />
     <None Remove="Icons\folderIcon.png" />
@@ -27,6 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Icons\Arrow-Left-icon.png" />
+    <Resource Include="Icons\Arrow-Right-icon.png" />
     <Resource Include="Icons\blackStar.png" />
     <Resource Include="Icons\deleteBin.png" />
     <Resource Include="Icons\folderIcon.png" />

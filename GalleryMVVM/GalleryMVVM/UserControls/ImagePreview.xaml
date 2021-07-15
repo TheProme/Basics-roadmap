@@ -5,10 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:local="clr-namespace:GalleryMVVM">
-    <UserControl.Resources>
-        <local:UriToBitmapImageConverter x:Key="uriToBitmapConverter"/>
-        <BitmapImage x:Key="Placeholder" UriSource="pack://application:,,,/Icons/placeholder.png"/>
-    </UserControl.Resources>
     <Grid>
         <Border Width="20" Height="20" Background="WhiteSmoke" BorderThickness="1" BorderBrush="Black" CornerRadius="5" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="-10 -5">
             <Image Width="12" Height="12" Source="pack://application:,,,/Icons/saved.png"/>
@@ -28,7 +24,7 @@
         <Button Style="{StaticResource DeleteImageButtonStyle}" Command="{Binding DeleteImageCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="-10 -5"/>
         <StackPanel Width="200" Height="200">
             <Image Height="160" Source="{Binding Path, Converter={StaticResource uriToBitmapConverter}, FallbackValue={StaticResource Placeholder}, IsAsync=True}"/>
-            <TextBlock Text="{Binding Name}" TextAlignment="Center"/>
+            <TextBlock Text="{Binding Name}" Foreground="{StaticResource ForegroundColor}" TextAlignment="Center"/>
             <local:RatingControl RatingValue="{Binding Rating, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <local:RatingControl.Style>
                     <Style TargetType="{x:Type local:RatingControl}">
