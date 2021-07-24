@@ -17,6 +17,16 @@ namespace CustomControls
 {
     public class NumericUpDown : Control
     {
+        protected const string PART_NumericView = nameof(PART_NumericView);
+        private TextBox _numericView = null;
+
+        protected const string PART_incrementButton = nameof(PART_incrementButton);
+        private RepeatButton _incrementButton = null;
+
+        protected const string PART_decrementButton = nameof(PART_decrementButton);
+        private RepeatButton _decrementButton = null;
+
+
         static NumericUpDown()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NumericUpDown), new FrameworkPropertyMetadata(typeof(NumericUpDown)));
@@ -24,18 +34,94 @@ namespace CustomControls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            NumericView = GetTemplateChild(PART_NumericView) as TextBox;
-            RaiseButton = GetTemplateChild(PART_RaiseButton) as RepeatButton;
-            DecreaseButton = GetTemplateChild(PART_DecreaseButton) as RepeatButton;
+            ApplyTemplateEvents();
         }
-        public int NumericValue
+
+        private void ApplyTemplateEvents()
         {
-            get { return (int)GetValue(NumericValueProperty); }
+            SetNumericViewEvents(GetTemplateChild(PART_NumericView) as TextBox);
+            SetIncreaseEvents(GetTemplateChild(PART_incrementButton) as RepeatButton);
+            SetDecrementEvents(GetTemplateChild(PART_decrementButton) as RepeatButton);
+        }
+
+        private void SetNumericViewEvents(TextBox textBox)
+        {
+            if (_numericView != null)
+            {
+                _numericView.PreviewTextInput -= TextInputHandler;
+                DataObject.RemovePastingHandler(_numericView, PastingHandler);
+                _numericView.PreviewMouseWheel -= PreviewMouseWheelHandler;
+            }
+            _numericView = textBox;
+            if (_numericView != null)
+            {
+                _numericView.PreviewTextInput += TextInputHandler;
+                DataObject.AddPastingHandler(_numericView, PastingHandler);
+                _numericView.PreviewMouseWheel += PreviewMouseWheelHandler;
+            }
+        }
+        private void SetIncreaseEvents(RepeatButton repeatButton)
+        {
+            if (_incrementButton != null)
+            {
+                _incrementButton.Click -= IncrementButton_Click;
+                _incrementButton.KeyDown -= IncrementButtonKeyHandler;
+            }
+            _incrementButton = repeatButton;
+            if (_incrementButton != null)
+            {
+                _incrementButton.Click += IncrementButton_Click;
+                _incrementButton.KeyDown += IncrementButtonKeyHandler;
+            }
+        }
+
+        private void SetDecrementEvents(RepeatButton repeatButton)
+        {
+            if (_decrementButton != null)
+            {
+                _decrementButton.Click -= DecrementButton_Click;
+                _decrementButton.KeyDown -= DecrementButtonKeyHandler;
+            }
+            _decrementButton = repeatButton;
+            if (_decrementButton != null)
+            {
+                _decrementButton.Click += DecrementButton_Click;
+                _decrementButton.KeyDown += DecrementButtonKeyHandler;
+            }
+        }
+
+        public double NumericValue
+        {
+            get { return (double)GetValue(NumericValueProperty); }
             set { SetValue(NumericValueProperty, value); }
         }
 
         public static readonly DependencyProperty NumericValueProperty =
-            DependencyProperty.Register("NumericValue", typeof(int), typeof(NumericUpDown), new PropertyMetadata(0));
+            DependencyProperty.Register("NumericValue", typeof(double), typeof(NumericUpDown), new PropertyMetadata(0d, NumericValueChanged, NumericCoerceValue), new ValidateValueCallback(IsTextAllowed));
+
+        private static bool IsTextAllowed(object value)
+        {
+            double res = 0d;
+            return Double.TryParse(value.ToString(), out res);
+        }
+        private static void NumericValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as NumericUpDown).SetValue(NumericValueProperty, (double)e.NewValue);
+        }
+
+        private static object NumericCoerceValue(DependencyObject d, object baseValue)
+        {
+            NumericUpDown control = (NumericUpDown)d;
+            if (((double)baseValue) < control.MinValue)
+            {
+                return control.MinValue;
+            }
+            if(((double)baseValue) > control.MaxValue)
+            {
+                return control.MaxValue;
+            }
+            return baseValue;
+        }
 
         public int Delay
         {
@@ -44,7 +130,7 @@ namespace CustomControls
         }
 
         public static readonly DependencyProperty DelayProperty =
-            DependencyProperty.Register("Delay", typeof(int), typeof(NumericUpDown), new PropertyMetadata(SystemParameters.KeyboardDelay));
+            DependencyProperty.Register("Delay", typeof(int), typeof(NumericUpDown), new PropertyMetadata(100));
 
         public int Interval
         {
@@ -53,110 +139,88 @@ namespace CustomControls
         }
 
         public static readonly DependencyProperty IntervalProperty =
-            DependencyProperty.Register("Interval", typeof(int), typeof(NumericUpDown), new PropertyMetadata(SystemParameters.KeyboardSpeed));
+            DependencyProperty.Register("Interval", typeof(int), typeof(NumericUpDown), new PropertyMetadata(100));
 
-
-
-
-        protected const string PART_RaiseButton = nameof(PART_RaiseButton);
-        private RepeatButton _raiseButton = null;
-        private RepeatButton RaiseButton
+        public double MaxValue
         {
-            get
-            {
-                return _raiseButton;
-            }
-            set
-            {
-                if (_raiseButton != null)
-                {
-                    _raiseButton.Click -= RaiseButton_Click;
-                    _raiseButton.KeyDown -= RaiseButtonKeyHandler;
-                }
-                _raiseButton = value;
-                if (_raiseButton != null)
-                {
-                    _raiseButton.Click += RaiseButton_Click;
-                    _raiseButton.KeyDown += RaiseButtonKeyHandler;
-                }
-            }
+            get { return (double)GetValue(MaxValueProperty); }
+            set { SetValue(MaxValueProperty, value); }
         }
 
-        private void RaiseButtonKeyHandler(object sender, KeyEventArgs e)
+        public static readonly DependencyProperty MaxValueProperty =
+            DependencyProperty.Register("MaxValue", typeof(double), typeof(NumericUpDown), new PropertyMetadata(Double.MaxValue, MaxValueChanged, MaxCoerceValue));
+
+        private static void MaxValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if(e.Key == Key.Up)
-                NumericValue++;
+            (d as NumericUpDown).SetValue(MaxValueProperty, (double)e.NewValue);
         }
 
-        private void RaiseButton_Click(object sender, RoutedEventArgs e)
+        private static object MaxCoerceValue(DependencyObject d, object baseValue)
         {
-            NumericValue++;
+            NumericUpDown control = (NumericUpDown)d;
+            if (((double)baseValue) < control.MinValue)
+            {
+                return control.MinValue;
+            }
+            return baseValue;
         }
 
-        protected const string PART_DecreaseButton = nameof(PART_DecreaseButton);
-        private RepeatButton _decreaseButton = null;
-        private RepeatButton DecreaseButton
+        public double MinValue
         {
-            get
-            {
-                return _decreaseButton;
-            }
-            set
-            {
-                if (_decreaseButton != null)
-                {
-                    _decreaseButton.Click -= DecreaseButton_Click;
-                    _decreaseButton.KeyDown -= DecreaseButtonKeyHandler;
-                }
-                _decreaseButton = value;
-                if (_decreaseButton != null)
-                {
-                    _decreaseButton.Click += DecreaseButton_Click;
-                    _decreaseButton.KeyDown += DecreaseButtonKeyHandler;
-                }
-            }
+            get { return (double)GetValue(MinValueProperty); }
+            set { SetValue(MinValueProperty, value); }
         }
-        private void DecreaseButtonKeyHandler(object sender, KeyEventArgs e)
+
+        public static readonly DependencyProperty MinValueProperty =
+            DependencyProperty.Register("MinValue", typeof(double), typeof(NumericUpDown), new PropertyMetadata(Double.MinValue, MinValueChanged, MinCoerceValue));
+
+        private static object MinCoerceValue(DependencyObject d, object baseValue)
+        {
+            NumericUpDown control = (NumericUpDown)d;
+            if (((double)baseValue) > control.MaxValue)
+            {
+                return control.MaxValue;
+            }
+            return baseValue;
+        }
+        private static void MinValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            (d as NumericUpDown).SetValue(MinValueProperty, (double)e.NewValue);
+        }
+        public double Tick
+        {
+            get { return (double)GetValue(TickProperty); }
+            set { SetValue(TickProperty, value); }
+        }
+
+        public static readonly DependencyProperty TickProperty =
+            DependencyProperty.Register("Tick", typeof(double), typeof(NumericUpDown), new PropertyMetadata(1d));
+
+
+
+
+
+        private void IncrementButtonKeyHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up)
+                NumericValue += Tick;
+        }
+
+        private void IncrementButton_Click(object sender, RoutedEventArgs e)
+        {
+            NumericValue += Tick;
+        }
+
+        private void DecrementButtonKeyHandler(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Down)
-                NumericValue--;
+                NumericValue -= Tick;
         }
-        private void DecreaseButton_Click(object sender, RoutedEventArgs e)
+        private void DecrementButton_Click(object sender, RoutedEventArgs e)
         {
-            NumericValue--;
+            NumericValue -= Tick ;
         }
-
-        protected const string PART_NumericView = nameof(PART_NumericView);
-        private TextBox _numericView = null;
-        private TextBox NumericView
-        {
-            get
-            {
-                return _numericView;
-            }
-            set
-            {
-                if (_numericView != null)
-                {
-                    _numericView.PreviewTextInput -= TextInputHandler;
-                    DataObject.RemovePastingHandler(_numericView, PastingHandler);
-                    _numericView.PreviewMouseWheel -= PreviewMouseWheelHandler;
-                }
-                _numericView = value;
-                if (_numericView != null)
-                {
-                    _numericView.PreviewTextInput += TextInputHandler;
-                    DataObject.AddPastingHandler(NumericView, PastingHandler);
-                    _numericView.PreviewMouseWheel += PreviewMouseWheelHandler;
-                }
-            }
-        }
-
-        private static bool IsTextAllowed(string text)
-        {
-            int res = 0;
-            return int.TryParse(text, out res);
-        }
+        
         private void PastingHandler(object sender, DataObjectPastingEventArgs e)
         {
             if (e.DataObject.GetDataPresent(typeof(String)))
@@ -168,15 +232,12 @@ namespace CustomControls
         }
         private void PreviewMouseWheelHandler(object sender, MouseWheelEventArgs e)
         {
-            NumericValue = e.Delta > 0 ? ++NumericValue : --NumericValue;
+            NumericValue = e.Delta > 0 ? NumericValue += Tick : NumericValue -= Tick;
         }
 
         private void TextInputHandler(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !IsTextAllowed(e.Text);
         }
-
-        
-
     }
 }

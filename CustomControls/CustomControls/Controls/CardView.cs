@@ -22,7 +22,23 @@ namespace CustomControls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            EditButton = GetTemplateChild(PART_EditButton) as Button;
+            SetEditEvents(GetTemplateChild(PART_EditButton) as Button);
+        }
+
+        protected const string PART_EditButton = nameof(PART_EditButton);
+        private Button _editButton = null;
+
+        private void SetEditEvents(Button button)
+        {
+            if (_editButton != null)
+            {
+                _editButton.Click -= EditButton_Click;
+            }
+            _editButton = button;
+            if (_editButton != null)
+            {
+                _editButton.Click += EditButton_Click;
+            }
         }
 
         public static readonly DependencyProperty IsEditingProperty =
@@ -67,27 +83,6 @@ namespace CustomControls
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(CardView), new PropertyMetadata(String.Empty));
 
-        protected const string PART_EditButton = nameof(PART_EditButton);
-        private Button _editButton = null;
-        private Button EditButton
-        {
-            get
-            {
-                return _editButton;
-            }
-            set
-            {
-                if (_editButton != null)
-                {
-                    _editButton.Click -= EditButton_Click;
-                }
-                _editButton = value;
-                if (_editButton != null)
-                {
-                    _editButton.Click += EditButton_Click;
-                }
-            }
-        }
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
             IsEditing = !IsEditing;
