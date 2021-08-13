@@ -8,6 +8,19 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <c:Ship Size="Large" ShipOrientation="Horizontal" BlockSize="30" Background="Green" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <c:Ship ShipModel="{Binding ShipViewModel1}" Background="Green" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <c:Ship ShipModel="{Binding ShipViewModel2}" Background="Green" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <c:Ship ShipModel="{Binding ShipViewModel3}" Background="Green" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <c:Ship ShipModel="{Binding ShipViewModel4}" Background="Green" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <c:Field FieldModel="{Binding FieldView}" />
+        </Grid>
     </Grid>
+    
 </Window>

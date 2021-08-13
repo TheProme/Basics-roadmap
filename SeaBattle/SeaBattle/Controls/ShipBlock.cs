@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SeaBattle.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SeaBattle.Controls
 {
@@ -20,7 +11,20 @@ namespace SeaBattle.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ShipBlock), new FrameworkPropertyMetadata(typeof(ShipBlock)));
         }
 
-        public event Action BlockHitEvent;
+
+
+        public ShipBlockViewModel ShipBlockModel
+        {
+            get { return (ShipBlockViewModel)GetValue(ShipBlockModelProperty); }
+            set { SetValue(ShipBlockModelProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ShipBlockModelProperty =
+            DependencyProperty.Register("ShipBlockModel", typeof(ShipBlockViewModel), typeof(ShipBlock), new PropertyMetadata(null));
+
+
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -45,20 +49,10 @@ namespace SeaBattle.Controls
 
         private void HitButton_Click(object sender, RoutedEventArgs e)
         {
-            if(IsHit)
+            if(ShipBlockModel.IsHit)
                 return;
-            IsHit = true;
-            BlockHitEvent?.Invoke();
+            ShipBlockModel.IsHit = true;
         }
-
-        public bool IsHit
-        {
-            get { return (bool)GetValue(IsHitProperty); }
-            set { SetValue(IsHitProperty, value); }
-        }
-
-        public static readonly DependencyProperty IsHitProperty =
-            DependencyProperty.Register("IsHit", typeof(bool), typeof(ShipBlock), new PropertyMetadata(false));
 
     }
 }
