@@ -31,7 +31,7 @@ namespace GalleryMVVM
         private ICommand _nextImage;
         public ICommand NextImage
         {
-            get => _nextImage ?? (_nextImage = new ParametrizedCommand(obj =>
+            get => _nextImage ?? (_nextImage = new RelayCommand(obj =>
             {
                 _index = _index < Images.Count - 1 ? ++_index : 0;
                 CurrentImage = Images[_index];
@@ -41,7 +41,7 @@ namespace GalleryMVVM
         private ICommand _previousImage;
         public ICommand PreviousImage
         {
-            get => _previousImage ?? (_previousImage = new ParametrizedCommand(obj =>
+            get => _previousImage ?? (_previousImage = new RelayCommand(obj =>
             {
                 _index = _index > 0 ? --_index : Images.Count - 1;
                 CurrentImage = Images[_index];

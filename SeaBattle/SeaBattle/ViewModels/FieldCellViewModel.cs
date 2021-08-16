@@ -1,12 +1,27 @@
-﻿using SeaBattle.Extensions;
+﻿using SeaBattle.Commands;
+using SeaBattle.Extensions;
 using System;
+using System.Windows;
+using System.Windows.Input;
 
 namespace SeaBattle.ViewModels
 {
     public class FieldCellViewModel : BaseViewModel
     {
-        public delegate void CellClicked(object cellValue);
-        public event CellClicked Clicked;
+        private static readonly int _defaultCellSize = 30;
+
+        private int _cellSize = _defaultCellSize;
+
+        public int CellSize
+        {
+            get => _cellSize;
+            set 
+            { 
+                _cellSize = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         private Position _position;
 
@@ -20,21 +35,9 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        private bool _isActive;
+        private IClickableCell _cellValue;
 
-        public bool IsActive
-        {
-            get => _isActive;
-            set 
-            { 
-                _isActive = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private object _cellValue;
-
-        public object CellValue
+        public IClickableCell CellValue
         {
             get => _cellValue;
             set 
@@ -44,21 +47,36 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        private ShipViewModel _parentModel;
+        private bool _isPreview = false;
 
-        public ShipViewModel ParentModel
+        public bool IsPreview
         {
-            get { return _parentModel; }
-            private set { _parentModel = value; }
+            get => _isPreview;
+            set 
+            { 
+                _isPreview = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isOccupied;
+
+        public bool IsOccupied
+        {
+            get => _isOccupied;
+            set 
+            { 
+                _isOccupied = value;
+                OnPropertyChanged();
+            }
         }
 
 
 
-        public FieldCellViewModel(Position position, object cellValue = null)
+        public FieldCellViewModel(Position position, IClickableCell cellValue = null)
         {
             Position = position;
             CellValue = cellValue;
         }
-
     }
 }

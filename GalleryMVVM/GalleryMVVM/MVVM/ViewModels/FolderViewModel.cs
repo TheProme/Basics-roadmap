@@ -82,7 +82,7 @@ namespace GalleryMVVM.MVVM.ViewModels
         private ICommand _deselectFolder;
         public ICommand DeselectFolder
         {
-            get => _deselectFolder ?? (_deselectFolder = new ParametrizedCommand(obj =>
+            get => _deselectFolder ?? (_deselectFolder = new RelayCommand(obj =>
             {
                 //TODO deselect a ****ing folder...
             }));

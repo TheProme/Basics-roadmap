@@ -144,7 +144,7 @@ namespace GalleryMVVM
 		{
 			get
 			{
-				return _showFavorites ?? (_showFavorites = new ParametrizedCommand(obj =>
+				return _showFavorites ?? (_showFavorites = new RelayCommand(obj =>
 				{
 					ReadImagesFromRepository();
 				}));

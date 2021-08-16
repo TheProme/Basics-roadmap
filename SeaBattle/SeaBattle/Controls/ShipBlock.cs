@@ -1,4 +1,5 @@
-﻿using SeaBattle.ViewModels;
+﻿using SeaBattle.Extensions;
+using SeaBattle.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,17 +12,39 @@ namespace SeaBattle.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ShipBlock), new FrameworkPropertyMetadata(typeof(ShipBlock)));
         }
 
-
-
-        public ShipBlockViewModel ShipBlockModel
+        public Position Position
         {
-            get { return (ShipBlockViewModel)GetValue(ShipBlockModelProperty); }
-            set { SetValue(ShipBlockModelProperty, value); }
+            get { return (Position)GetValue(PositionProperty); }
+            set { SetValue(PositionProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ShipBlockModelProperty =
-            DependencyProperty.Register("ShipBlockModel", typeof(ShipBlockViewModel), typeof(ShipBlock), new PropertyMetadata(null));
+        public static readonly DependencyProperty PositionProperty =
+            DependencyProperty.Register("Position", typeof(Position), typeof(ShipBlock), new PropertyMetadata(new Position(0, 0)));
+
+
+
+
+        public bool IsHit
+        {
+            get { return (bool)GetValue(IsHitProperty); }
+            set { SetValue(IsHitProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsHitProperty =
+            DependencyProperty.Register("IsHit", typeof(bool), typeof(ShipBlock), new PropertyMetadata(false));
+
+
+
+
+        public bool ShipDestroyed
+        {
+            get { return (bool)GetValue(ShipDestroyedProperty); }
+            set { SetValue(ShipDestroyedProperty, value); }
+        }
+
+        public static readonly DependencyProperty ShipDestroyedProperty =
+            DependencyProperty.Register("ShipDestroyed", typeof(bool), typeof(ShipBlock), new PropertyMetadata(false));
+
 
 
 
@@ -49,9 +72,9 @@ namespace SeaBattle.Controls
 
         private void HitButton_Click(object sender, RoutedEventArgs e)
         {
-            if(ShipBlockModel.IsHit)
+            if (IsHit)
                 return;
-            ShipBlockModel.IsHit = true;
+            IsHit = true;
         }
 
     }

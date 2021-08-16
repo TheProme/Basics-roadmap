@@ -10,9 +10,9 @@ namespace SeaBattle.ViewModels
 {
     public class ShipViewModel : BaseViewModel
     {
-        private const int BLOCK_SIZE = 30;
         public event Action ShipSetEvent;
-        public ObservableCollection<ShipBlockViewModel> ShipBlocks { get; private set; } = new ObservableCollection<ShipBlockViewModel>();
+        public ObservableCollection<ShipBlockViewModel> ShipDeck { get; private set; } = new ObservableCollection<ShipBlockViewModel>();
+        public ObservableCollection<Position> NeighbourCells { get; set; } = new ObservableCollection<Position>();
 
         private Orientation _orientation;
 
@@ -22,6 +22,7 @@ namespace SeaBattle.ViewModels
             set 
             { 
                 _orientation = value;
+                UpdateShip();
                 OnPropertyChanged();
             }
         }
@@ -34,7 +35,7 @@ namespace SeaBattle.ViewModels
             set 
             { 
                 _headPosition = value;
-                SetShipBlocksPosition(value);
+                UpdateShip();
                 OnPropertyChanged();
             }
         }
@@ -78,18 +79,6 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        private int _deckSize = BLOCK_SIZE;
-
-        public int DeckSize
-        {
-            get => _deckSize;
-            set 
-            { 
-                _deckSize = value;
-                OnPropertyChanged();
-            }
-        }
-
 
         public ShipViewModel(Orientation orientation, ShipSize size, Position headPos)
         {
@@ -100,33 +89,39 @@ namespace SeaBattle.ViewModels
 
         private void CreateShip(ShipSize size)
         {
-            if(ShipBlocks.Count > 0)
+            if(ShipDeck.Count > 0)
             {
-                foreach (var block in ShipBlocks)
+                foreach (var block in ShipDeck)
                 {
                     block.BlockHitEvent -= BlockHitHandler;
                 }
-                ShipBlocks.Clear();
+                ShipDeck.Clear();
             }
             for (int i = 0; i < (int)size; i++)
             {
-                ShipBlockViewModel deck = new ShipBlockViewModel(this) { BlockSize = DeckSize };
+                ShipBlockViewModel deck = new ShipBlockViewModel(this);
                 deck.BlockHitEvent += BlockHitHandler;
-                ShipBlocks.Add(deck);
+                ShipDeck.Add(deck);
             }
         }
 
         private void BlockHitHandler()
         {
-            Destroyed = ShipBlocks.All(bl => bl.IsHit);
+            Destroyed = ShipDeck.All(bl => bl.IsHit);
             //TODO: +1 ход за подбитие корабля
         }
 
-        private void SetShipBlocksPosition(Position head)
+        private void UpdateShip()
         {
+            SetShipDeckPosition(HeadPosition);
+        }
+
+        private void SetShipDeckPosition(Position head)
+        {
+            NeighbourCells.Clear();
             int newRow = head.Row;
             int newCol = head.Column;
-            foreach (var block in ShipBlocks)
+            foreach (var block in ShipDeck)
             {
                 if (Orientation == Orientation.Horizontal)
                 {
@@ -139,6 +134,52 @@ namespace SeaBattle.ViewModels
                     newRow++;
                 }
             }
+            SetNeighbourCells();
+        }
+
+        private void SetNeighbourCells()
+        {
+            foreach (var deck in ShipDeck)
+            {
+                for (int i = deck.Position.Row - 1; i < deck.Position.Row + 2; i++)
+                {
+                    for (int j = deck.Position.Column - 1; j < deck.Position.Column + 2; j++)
+                    {
+                        Position neighbour = new Position(i, j);
+                        if (neighbour.Row >= 0 && 
+                            neighbour.Row < GameRules.FieldSize &&
+                            neighbour.Column >= 0 &&
+                            neighbour.Column < GameRules.FieldSize &&
+                            !ShipDeck.Any(block => block.Position == neighbour) && 
+                            !NeighbourCells.Contains(neighbour))
+                        {
+                            NeighbourCells.Add(neighbour);
+                        }    
+                    }
+                }
+                ////Tiny ship
+                //if(deck.Position == HeadPosition && deck.Position == ShipDeck.LastOrDefault().Position)
+                //{
+                //    for (int i = deck.Position.Row - 1; i < deck.Position.Row + 2; i++)
+                //    {
+                //        for (int j = deck.Position.Column - 1; j < deck.Position.Column + 2; j++)
+                //        {
+                //            Position neighbour = new Position(i, j);
+                //            if(neighbour.Row >= 0 && neighbour.Column >= 0 && neighbour != deck.Position)
+                //                NeighbourCells.Add(neighbour);
+                //        }
+                //    }
+                //}
+                //else if (deck.Position == HeadPosition)
+                //{
+
+                //}
+                //if (ShipDeck.LastOrDefault() == deck)
+                //{
+
+                //}
+            }
+            var a = NeighbourCells;
         }
     }
 }

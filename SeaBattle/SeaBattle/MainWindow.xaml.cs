@@ -22,21 +22,36 @@ namespace SeaBattle
     /// </summary>
     public partial class MainWindow : Window
     {
-        public FieldViewModel FieldView { get; set; }
-        public ObservableCollection<ShipViewModel> Ships { get; set; } = new ObservableCollection<ShipViewModel>();
+        public FieldViewModel FieldView1 { get; set; }
+        public FieldViewModel FieldView2 { get; set; }
+        public ObservableCollection<ShipViewModel> Ships1 { get; set; } = new ObservableCollection<ShipViewModel>();
+        public ObservableCollection<ShipViewModel> Ships2 { get; set; } = new ObservableCollection<ShipViewModel>();
         public ShipViewModel ShipViewModel1 { get; set; } = new ShipViewModel(Orientation.Horizontal, ShipSize.Medium, new Extensions.Position(0, 2));
         public ShipViewModel ShipViewModel2 { get; set; } = new ShipViewModel(Orientation.Vertical, ShipSize.Large, new Extensions.Position(2, 5));
         public ShipViewModel ShipViewModel3 { get; set; } = new ShipViewModel(Orientation.Horizontal, ShipSize.Small, new Extensions.Position(4, 2));
         public ShipViewModel ShipViewModel4 { get; set; } = new ShipViewModel(Orientation.Horizontal, ShipSize.Tiny, new Extensions.Position(0, 0));
         public MainWindow()
         {
-            Ships.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Medium, new Extensions.Position(0, 2)));
-            Ships.Add(new ShipViewModel(Orientation.Vertical, ShipSize.Large, new Extensions.Position(2, 5)));
-            Ships.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Small, new Extensions.Position(4, 2)));
-            Ships.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Tiny, new Extensions.Position(0, 0)));
-            FieldView = new FieldViewModel(Ships, 10);
+            Ships1.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Medium, new Extensions.Position(0, 2)));
+            Ships1.Add(new ShipViewModel(Orientation.Vertical, ShipSize.Large, new Extensions.Position(2, 5)));
+            Ships1.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Small, new Extensions.Position(4, 2)));
+            Ships1.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Tiny, new Extensions.Position(0, 0)));
+
+            Ships2.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Medium, new Extensions.Position(0, 2)));
+            Ships2.Add(new ShipViewModel(Orientation.Vertical, ShipSize.Large, new Extensions.Position(2, 5)));
+            Ships2.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Small, new Extensions.Position(4, 2)));
+            Ships2.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Tiny, new Extensions.Position(0, 0)));
+
+            FieldView1 = new FieldViewModel(Ships1, 10, true);
+            FieldView2 = new FieldViewModel(Ships2, 10);
             this.DataContext = this;
             InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Ships1.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Tiny, new Extensions.Position(9, 0)));
+            Ships2.Add(new ShipViewModel(Orientation.Horizontal, ShipSize.Tiny, new Extensions.Position(8, 4)));
         }
     }
 }

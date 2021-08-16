@@ -5,8 +5,14 @@
     xmlns:helpers="clr-namespace:SeaBattle.Helpers"
     xmlns:vm="clr-namespace:SeaBattle.ViewModels">
 
+    <SolidColorBrush x:Key="NotHitDeck" Color="Green"/>
+    <SolidColorBrush x:Key="HitDeck" Color="Orange"/>
+    <SolidColorBrush x:Key="DestroyedShip" Color="Red"/>
+    <SolidColorBrush x:Key="EmptyCellBackground" Color="Blue"/>
+    <SolidColorBrush x:Key="MissedCellBackground" Color="RoyalBlue"/>
+    <SolidColorBrush x:Key="FogOfWar" Color="Gray"/>
+
     <Style x:Key="BlockButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="Background" Value="{Binding Background}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -24,6 +30,28 @@
         </Setter>
     </Style>
 
+    <Style TargetType="{x:Type local:EmptyFieldCell}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:EmptyFieldCell}">
+                    <Grid x:Name="PART_CellGrid"
+                          Background="{TemplateBinding Background}">
+                        <Button x:Name="PART_EmptyCellHitButton" 
+                                Style="{StaticResource BlockButtonStyle}"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsHit}" Value="False">
+                            <Setter Property="Background" Value="{StaticResource EmptyCellBackground}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsHit}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource MissedCellBackground}"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type local:ShipBlock}">
         <Setter Property="Template">
             <Setter.Value>
@@ -34,11 +62,14 @@
                                 Style="{StaticResource BlockButtonStyle}"/>
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsHit}" Value="True">
-                            <Setter Property="Background" Value="Red"/>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsHit}" Value="False">
+                            <Setter Property="Background" Value="{StaticResource NotHitDeck}"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:Ship}, Path=ShipModel.Destroyed}" Value="True">
-                            <Setter Property="Background" Value="Gray"/>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsHit}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HitDeck}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=ShipDestroyed}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource DestroyedShip}"/>
                         </DataTrigger>
                     </ControlTemplate.Triggers> 
                 </ControlTemplate>
@@ -51,19 +82,22 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:Ship}">
                     <ItemsControl x:Name="PART_ShipBase" 
-                                  ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:Ship}, Path=ShipModel.ShipBlocks}"
+                                  ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:Ship}, Path=ShipDeck}"
                                   Background="{TemplateBinding Background}"
                                   Width="{TemplateBinding Width}"
                                   Height="{TemplateBinding Height}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <local:ShipBlock Width="{Binding RelativeSource={RelativeSource AncestorType=local:Ship}, Path=ShipModel.DeckSize}" 
-                                                 Height="{Binding RelativeSource={RelativeSource AncestorType=local:Ship}, Path=ShipModel.DeckSize}"/>
+                                <local:ShipBlock Width="{Binding BlockSize}" 
+                                                 Height="{Binding BlockSize}"
+                                                 Position="{Binding Position}"
+                                                 ShipDestroyed="{Binding RelativeSource={RelativeSource AncestorType=local:Ship}, Path=Destroyed}"
+                                                 IsHit="{Binding IsHit, Mode=TwoWay}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="{Binding RelativeSource={RelativeSource AncestorType=local:Ship}, Path=ShipModel.Orientation}"/>
+                                <StackPanel Orientation="{Binding RelativeSource={RelativeSource AncestorType=local:Ship}, Path=Orientation}"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
@@ -75,23 +109,66 @@
 
 
     <!--Empty cell template-->
-    <DataTemplate x:Key="EmptyCell">
-        <Button Content="{Binding Position}"/>
+    <DataTemplate x:Key="EmptyCell" DataType="{x:Type vm:EmptyCellViewModel}">
+        <local:EmptyFieldCell x:Name="PART_Cell" 
+                              Width="{Binding CellSize}"
+                              Height="{Binding CellSize}"
+                              IsHit="{Binding CellValue.IsHit, Mode=TwoWay}"/>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsPreview}" Value="True">
+                <Setter TargetName="PART_Cell" Property="Background" Value="Purple"/>
+            </DataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding IsPreview}" Value="True"/>
+                    <Condition Binding="{Binding IsOccupied}" Value="True"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="PART_Cell" Property="Background" Value="Red"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=IsPlayerField}" Value="False"/>
+                    <Condition Binding="{Binding CellValue.IsHit}" Value="False"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="PART_Cell" Property="Background" Value="{StaticResource FogOfWar}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+        </DataTemplate.Triggers>
     </DataTemplate>
 
     <!--Ship cell template-->
     <DataTemplate x:Key="ShipCell" DataType="{x:Type vm:ShipBlockViewModel}">
         <local:ShipBlock x:Name="PART_ShipBlock"
-                         ShipBlockModel="{Binding CellValue}"
-                         Width="{Binding CellValue.BlockSize}" 
-                         Height="{Binding CellValue.BlockSize}"/>
+                         Width="{Binding CellSize}" 
+                         Height="{Binding CellSize}"
+                         Position="{Binding CellValue.Position}"
+                         ShipDestroyed="{Binding CellValue.ShipBase.Destroyed}"
+                         IsHit="{Binding CellValue.IsHit, Mode=TwoWay}"/>
         <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding CellValue.IsHit}" Value="True">
-                <Setter TargetName="PART_ShipBlock" Property="Background" Value="Red"/>
+            <DataTrigger Binding="{Binding IsPreview}" Value="True">
+                <Setter TargetName="PART_ShipBlock" Property="Background" Value="Purple"/>
             </DataTrigger>
-            <DataTrigger Binding="{Binding CellValue.ShipBase.Destroyed}" Value="True">
-                <Setter TargetName="PART_ShipBlock" Property="Background" Value="Gray"/>
-            </DataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding IsPreview}" Value="True"/>
+                    <Condition Binding="{Binding IsOccupied}" Value="True"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="PART_ShipBlock" Property="Background" Value="Red"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=IsPlayerField}" Value="False"/>
+                    <Condition Binding="{Binding CellValue.IsHit}" Value="False"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="PART_ShipBlock" Property="Background" Value="{StaticResource FogOfWar}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
 
@@ -103,7 +180,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:Field}">
-                    <ItemsControl ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=FieldModel.FieldCells}"
+                    <ItemsControl ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=FieldCells}"
                                   ItemTemplateSelector="{StaticResource CellTemplateSelector}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -112,20 +189,6 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="{x:Type local:FieldCell}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:FieldCell}">
-                    <Grid x:Name="PART_CellBorder"
-                          Background="{TemplateBinding Background}">
-                        <Button x:Name="PART_HitButton" 
-                                Style="{StaticResource BlockButtonStyle}"/>
-                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

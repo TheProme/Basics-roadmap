@@ -5,8 +5,10 @@ using System.Text;
 
 namespace SeaBattle.ViewModels
 {
-    public class ShipBlockViewModel : BaseViewModel
+    public class ShipBlockViewModel : BaseViewModel, IClickableCell
     {
+        private const int BLOCK_SIZE = 30;
+
         private ShipViewModel _shipBase;
 
         public ShipViewModel ShipBase
@@ -32,7 +34,7 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        private int _blockSize;
+        private int _blockSize = BLOCK_SIZE;
 
         public int BlockSize
         {
