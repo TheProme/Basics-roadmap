@@ -4,6 +4,7 @@ using SeaBattle.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
@@ -30,6 +31,8 @@ namespace SeaBattle.ViewModels
             }
         }
         public ObservableCollection<ShipViewModel> Ships { get; set; } = new ObservableCollection<ShipViewModel>();
+
+        public event Action FieldIsReadyEvent;
 
         private bool _isRemoving;
 
@@ -106,22 +109,78 @@ namespace SeaBattle.ViewModels
                 OnPropertyChanged();
             }
         }
-        public SetupFieldViewModel(FieldViewModel fieldVM = null)
+
+        private Random rnd = new Random();
+
+        public SetupFieldViewModel(bool isPlayerField)
         {
-            if(fieldVM == null)
+            if(isPlayerField)
             {
-                fieldVM = new FieldViewModel(Ships, GameRules.FieldSize, true);
+                FieldVM = new FieldViewModel(Ships, GameRules.FieldSize, true);
+                CurrentShipSize = ShipSize.Tiny;
             }
-            FieldVM = fieldVM;
-            CurrentShipSize = ShipSize.Tiny;
-            Ships.CollectionChanged += Ships_CollectionChanged;
+            else
+            {
+                FieldVM = new FieldViewModel(Ships, GameRules.FieldSize, false);
+                RandomizePlacement();
+            }
+            
         }
 
-        private void Ships_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void RandomizePlacement()
         {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
+            FieldVM.ClearField();
+            foreach (var size in ShipSizeValues.Reverse())
             {
-                CheckIfPossibleToPlace(CurrentShipSize);
+                switch (size)
+                {
+                    case ShipSize.Tiny:
+                        PlaceRandomShips(size, GameRules.TinyShips);
+                        break;
+                    case ShipSize.Small:
+                        PlaceRandomShips(size, GameRules.SmallShips);
+                        break;
+                    case ShipSize.Medium:
+                        PlaceRandomShips(size, GameRules.MediumShips);
+                        break;
+                    case ShipSize.Large:
+                        PlaceRandomShips(size, GameRules.LargeShips);
+                        break;
+                }
+            }
+            CheckIfPossibleToPlace(CurrentShipSize);
+        }
+        private void PlaceRandomShips(ShipSize shipSize, int shipsCount)
+        {
+            int tries = 0;
+            CurrentShipSize = shipSize;
+            for (int i = 0; i < shipsCount; i++)
+            {
+                bool canPlace = true;
+                PreviewShip = new ShipViewModel((Orientation)rnd.Next(0, 2), shipSize, new Position(0,0));
+                do
+                {
+                    PreviewShip.HeadPosition = new Position(rnd.Next(GameRules.FieldSize - 1), rnd.Next(GameRules.FieldSize - 1));
+                    canPlace = SetShipPreview(PreviewShip.HeadPosition);
+                    if (!canPlace)
+                    {
+                        RotateShip();
+                    }
+                    tries++;
+                    if(tries > 300)
+                    {
+                        break;
+                    }
+                }
+                while (!canPlace);
+                if(tries > 300)
+                {
+                    RandomizePlacement();
+                }
+                else
+                {
+                    PlaceShip(ShipToPlace);
+                }
             }
         }
 
@@ -135,8 +194,33 @@ namespace SeaBattle.ViewModels
             }, obj => ShipToPlace != null || PreviewShip != null));
         }
 
+        private ICommand _randomizePlacementCommand;
 
-        private void SetShipPreview(Position headDeck)
+        public ICommand RandomizePlacementCommand
+        {
+            get => _randomizePlacementCommand ?? (_randomizePlacementCommand = new RelayCommand(obj =>
+            {
+                RandomizePlacement();
+            }, obj => !IsRemoving));
+        }
+
+        private ICommand _setFieldCommand;
+
+        public ICommand SetFieldCommand
+        {
+            get => _setFieldCommand ?? (_setFieldCommand = new RelayCommand(obj =>
+            {
+                InvokeIsReady();
+            }, obj => CheckPlacedShips(ShipSizeValues)));
+        }
+
+        public void InvokeIsReady()
+        {
+            FieldVM.IsReady = true;
+            FieldIsReadyEvent?.Invoke();
+        }
+
+        private bool SetShipPreview(Position headDeck)
         {
             if (!IsRemoving && CheckIfPossibleToPlace(CurrentShipSize))
                 ShipToPlace = new ShipViewModel(PreviewShip.Orientation, PreviewShip.ShipSize, PreviewShip.HeadPosition);
@@ -152,21 +236,16 @@ namespace SeaBattle.ViewModels
                 if (shipDeck != null && shipDeck.Position.Row >= FieldVM.Size)
                 {
                     int rowDifference = (FieldVM.Size - 1) - shipDeck.Position.Row;
-                    foreach (var deck in ShipToPlace.ShipDeck)
-                    {
-                        deck.Position = new Position(deck.Position.Row + rowDifference, deck.Position.Column);
-                    }
+                    ShipToPlace.HeadPosition = new Position(ShipToPlace.HeadPosition.Row + rowDifference, ShipToPlace.HeadPosition.Column);
                 }
                 if (shipDeck != null && shipDeck.Position.Column >= FieldVM.Size)
                 {
                     int colDifference = (FieldVM.Size - 1) - shipDeck.Position.Column;
-                    foreach (var deck in ShipToPlace.ShipDeck)
-                    {
-                        deck.Position = new Position(deck.Position.Row, deck.Position.Column + colDifference);
-                    }
+                    ShipToPlace.HeadPosition = new Position(ShipToPlace.HeadPosition.Row, ShipToPlace.HeadPosition.Column + colDifference);
                 }
-                FieldVM.PreviewShip(ShipToPlace);
+                return FieldVM.PreviewShip(ShipToPlace);
             }
+            return false;
         }
 
         private void SetPreviewShip(ShipSize size)
@@ -195,6 +274,36 @@ namespace SeaBattle.ViewModels
             return false;
         }
 
+        private bool CheckPlacedShips(IEnumerable<ShipSize> shipSizeValues)
+        {
+            foreach (var size in shipSizeValues)
+            {
+                bool shipsChecked = false;
+                switch (size)
+                {
+                    case ShipSize.Tiny:
+                        shipsChecked = Ships.Where(ship => ship.ShipSize == size).Count() == GameRules.TinyShips;
+                        break;
+                    case ShipSize.Small:
+                        shipsChecked = Ships.Where(ship => ship.ShipSize == size).Count() == GameRules.SmallShips;
+                        break;
+                    case ShipSize.Medium:
+                        shipsChecked = Ships.Where(ship => ship.ShipSize == size).Count() == GameRules.MediumShips;
+                        break;
+                    case ShipSize.Large:
+                        shipsChecked = Ships.Where(ship => ship.ShipSize == size).Count() == GameRules.LargeShips;
+                        break;
+                    default:
+                        break;
+                }
+                if(!shipsChecked)
+                {
+                    return false;
+                }
+            };
+            return true;
+        }
+
         public void PlaceShip(ShipViewModel ship)
         {
             if(FieldVM.CanPlaceShip && ship != null)
@@ -216,6 +325,17 @@ namespace SeaBattle.ViewModels
             }
             if(ShipToPlace != null)
                 SetShipPreview(ShipToPlace.HeadPosition);
+        }
+        public void RemoveShip(Position mousePosition)
+        {
+            var shipToRemove = FieldVM.GetShipByPosition(mousePosition);
+            if(shipToRemove != null)
+            {
+                CurrentShipSize = shipToRemove.ShipSize;
+                Ships.Remove(shipToRemove);
+                CheckIfPossibleToPlace(CurrentShipSize);
+            }
+            
         }
     }
 }

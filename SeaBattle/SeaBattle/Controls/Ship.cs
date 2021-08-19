@@ -58,17 +58,6 @@ namespace SeaBattle.Controls
 
 
 
-        public bool IsSet
-        {
-            get { return (bool)GetValue(IsSetProperty); }
-            set { SetValue(IsSetProperty, value); }
-        }
-
-        public static readonly DependencyProperty IsSetProperty =
-            DependencyProperty.Register("IsSet", typeof(bool), typeof(Ship), new PropertyMetadata(false));
-
-
-
         public ShipSize ShipSize
         {
             get { return (ShipSize)GetValue(ShipSizeProperty); }

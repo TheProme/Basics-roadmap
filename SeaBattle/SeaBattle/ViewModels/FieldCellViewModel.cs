@@ -71,9 +71,7 @@ namespace SeaBattle.ViewModels
             }
         }
 
-
-
-        public FieldCellViewModel(Position position, IClickableCell cellValue = null)
+        public FieldCellViewModel(Position position, IClickableCell cellValue)
         {
             Position = position;
             CellValue = cellValue;

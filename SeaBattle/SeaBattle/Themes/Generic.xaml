@@ -115,6 +115,12 @@
                               Height="{Binding CellSize}"
                               IsHit="{Binding CellValue.IsHit, Mode=TwoWay}"/>
         <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=FieldIsReady}" Value="False">
+                <Setter Property="IsEnabled" Value="False"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=FieldIsReady}" Value="True">
+                <Setter Property="IsEnabled" Value="True"/>
+            </DataTrigger>
             <DataTrigger Binding="{Binding IsPreview}" Value="True">
                 <Setter TargetName="PART_Cell" Property="Background" Value="Purple"/>
             </DataTrigger>
@@ -148,6 +154,12 @@
                          ShipDestroyed="{Binding CellValue.ShipBase.Destroyed}"
                          IsHit="{Binding CellValue.IsHit, Mode=TwoWay}"/>
         <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=FieldIsReady}" Value="False">
+                <Setter Property="IsEnabled" Value="False"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=FieldIsReady}" Value="True">
+                <Setter Property="IsEnabled" Value="True"/>
+            </DataTrigger>
             <DataTrigger Binding="{Binding IsPreview}" Value="True">
                 <Setter TargetName="PART_ShipBlock" Property="Background" Value="Purple"/>
             </DataTrigger>
@@ -176,6 +188,7 @@
                                   EmptyCell="{StaticResource EmptyCell}"
                                   ShipCell="{StaticResource ShipCell}"/>
 
+    
     <Style TargetType="{x:Type local:Field}">
         <Setter Property="Template">
             <Setter.Value>
@@ -186,6 +199,39 @@
                             <ItemsPanelTemplate>
                                 <UniformGrid Rows="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=Size}"
                                              Columns="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=Size}"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                    <ControlTemplate.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsPlayerField}" Value="True"/>
+                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=FieldIsReady}" Value="True"/>
+                            </MultiDataTrigger.Conditions>
+                            <MultiDataTrigger.Setters>
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </MultiDataTrigger.Setters>
+                        </MultiDataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:GameView}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:GameView}">
+                    <ItemsControl ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:GameView}, Path=Players}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type vm:PlayerViewModel}">
+                                <local:PlayerFieldSetup SetupFieldViewModel="{Binding FieldPreview}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1"
+                                         Columns="2"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>

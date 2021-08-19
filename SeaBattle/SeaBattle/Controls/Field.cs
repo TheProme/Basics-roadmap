@@ -24,6 +24,7 @@ namespace SeaBattle.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Field), new FrameworkPropertyMetadata(typeof(Field)));
         }
 
+
         public FieldViewModel FieldModel
         {
             get { return (FieldViewModel)GetValue(FieldModelProperty); }
@@ -74,7 +75,7 @@ namespace SeaBattle.Controls
             {
                 for (int j = 0; j < size; j++)
                 {
-                    EmptyCellViewModel emptyCell = new EmptyCellViewModel(new Extensions.Position(i, j));
+                    EmptyCellViewModel emptyCell = new EmptyCellViewModel(new Position(i, j));
                     cells.Add(new FieldCellViewModel(emptyCell.Position, emptyCell));
                 }
             }
@@ -110,7 +111,7 @@ namespace SeaBattle.Controls
         public bool FieldIsReady
         {
             get { return (bool)GetValue(FieldIsReadyProperty); }
-            private set { SetValue(FieldIsReadyProperty, value); }
+            set { SetValue(FieldIsReadyProperty, value); }
         }
 
         public static readonly DependencyProperty FieldIsReadyProperty =

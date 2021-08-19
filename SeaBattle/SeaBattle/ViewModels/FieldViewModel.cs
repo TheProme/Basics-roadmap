@@ -13,6 +13,8 @@ namespace SeaBattle.ViewModels
 {
     public class FieldViewModel : BaseViewModel
     {
+        public event Action<IClickableCell> ShotEvent;
+
         private bool _isPlayerField;
 
         public bool IsPlayerField
@@ -48,7 +50,6 @@ namespace SeaBattle.ViewModels
                 OnPropertyChanged();
             }
         }
-
 
         private int _size = 10;
 
@@ -119,12 +120,18 @@ namespace SeaBattle.ViewModels
             {
                 for (int j = 0; j < size; j++)
                 {
-                    var emptyCell = new EmptyCellViewModel(new Extensions.Position(i, j));
+                    var emptyCell = new EmptyCellViewModel(new Position(i, j));
                     var cell = new FieldCellViewModel(emptyCell.Position, emptyCell);
+                    cell.CellValue.HitEvent += CellIsHit;
                     FieldCells.Add(cell);
                 }
             }
             SetShipsOnField(Ships);
+        }
+
+        private void CellIsHit(IClickableCell obj)
+        {
+            ShotEvent?.Invoke(obj);
         }
 
         private void AddShipToField(ShipViewModel ship)
@@ -135,14 +142,23 @@ namespace SeaBattle.ViewModels
                 if(existingCell != null)
                 {
                     var index = FieldCells.IndexOf(existingCell);
+                    existingCell.CellValue.HitEvent -= CellIsHit;
                     FieldCells.Remove(existingCell);
                     var shipCell = new FieldCellViewModel(deck.Position, deck);
+                    shipCell.IsOccupied = true;
+                    shipCell.CellValue.HitEvent += CellIsHit;
                     FieldCells.Insert(index, shipCell);
                 }
             }
+            foreach (var neighbour in ship.NeighbourCells)
+            {
+                var existingCell = FieldCells.FirstOrDefault(cell => cell.Position == neighbour);
+                if (existingCell != null)
+                    existingCell.IsOccupied = true;
+            }
         }
 
-        private void RemoveShipFromField(ShipViewModel ship)
+        public void RemoveShipFromField(ShipViewModel ship)
         {
             foreach (var deck in ship.ShipDeck)
             {
@@ -150,12 +166,36 @@ namespace SeaBattle.ViewModels
                 if (existingCell != null)
                 {
                     var index = FieldCells.IndexOf(existingCell);
-                    var emptyCell = new EmptyCellViewModel(deck.Position);
+                    existingCell.IsOccupied = false;
+                    existingCell.CellValue.HitEvent -= CellIsHit;
                     FieldCells.Remove(existingCell);
+                    var emptyCell = new EmptyCellViewModel(deck.Position);
                     var cell = new FieldCellViewModel(emptyCell.Position, emptyCell);
+                    cell.CellValue.HitEvent += CellIsHit;
                     FieldCells.Insert(index, cell);
                 }
             }
+            var cellsToClear = ship.NeighbourCells.ToList();
+            foreach (var item in Ships.Where(shp => shp != ship))
+            {
+                cellsToClear = cellsToClear.Except(item.NeighbourCells).ToList();
+            }
+            foreach (var neighbour in cellsToClear)
+            {
+                var existingCell = FieldCells.FirstOrDefault(cell => cell.Position == neighbour);
+                if(existingCell != null)
+                    existingCell.IsOccupied = false;
+            }
+            ship.NeighbourCells.Clear();
+        }
+
+        public void ClearField()
+        {
+            foreach (var ship in Ships)
+            {
+                RemoveShipFromField(ship);
+            }
+            Ships.Clear();
         }
 
         public void ClearPreview()
@@ -166,26 +206,23 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        public void PreviewShip(ShipViewModel ship)
+        public bool PreviewShip(ShipViewModel ship)
         {
             ClearPreview();
+            bool anyCellOccupied = false;
             foreach (var deck in ship.ShipDeck)
             {
                 var existingCell = FieldCells.FirstOrDefault(cell => cell.Position == deck.Position);
                 if(existingCell != null)
                 {
-                    foreach (var existingShip in Ships)
-                    {
-                        if (existingShip.ShipDeck.Any(d => d.Position == existingCell.Position) || existingShip.NeighbourCells.Any(c => c == existingCell.Position))
-                        {
-                            existingCell.IsOccupied = true;
-                            break;
-                        }
-                    }
                     existingCell.IsPreview = true;
-                    CanPlaceShip = !existingCell.IsOccupied;
+                    if(existingCell.IsOccupied)
+                    {
+                        anyCellOccupied = true;
+                    }
                 }
             }
+            return CanPlaceShip = !anyCellOccupied;
         }
 
         public ShipViewModel GetShipByPosition(Position position)

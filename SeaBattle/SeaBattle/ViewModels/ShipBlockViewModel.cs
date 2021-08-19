@@ -45,9 +45,7 @@ namespace SeaBattle.ViewModels
                 OnPropertyChanged();
             }
         }
-
-
-        public event Action BlockHitEvent;
+        public event Action<IClickableCell> HitEvent;
 
         private bool _isHit;
 
@@ -59,20 +57,20 @@ namespace SeaBattle.ViewModels
                 _isHit = value;
                 if (_isHit)
                 {
-                    InvokeHitEvent();
+                    HitEvent?.Invoke(this);
                 }
                 OnPropertyChanged();
             }
         }
 
+        public void InvokeHit()
+        {
+            IsHit = true;
+        }
+
         public ShipBlockViewModel(ShipViewModel parentShip)
         {
             ShipBase = parentShip;
-        }
-
-        public void InvokeHitEvent()
-        {
-            BlockHitEvent?.Invoke();
         }
     }
 }

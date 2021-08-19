@@ -9,50 +9,7 @@
         mc:Ignorable="d"
         Title="MainWindow">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
-            <c:Ship Orientation="{Binding ShipViewModel1.Orientation}" 
-                    ShipDeck="{Binding ShipViewModel1.ShipDeck}" 
-                    ShipSize="{Binding ShipViewModel1.ShipSize}" 
-                    HeadPosition="{Binding ShipViewModel1.HeadPosition}" 
-                    Destroyed="{Binding ShipViewModel1.Destroyed}"
-                    VerticalAlignment="Center" 
-                    HorizontalAlignment="Center"/>
-            <c:Ship Orientation="{Binding ShipViewModel2.Orientation}" 
-                    ShipDeck="{Binding ShipViewModel2.ShipDeck}" 
-                    ShipSize="{Binding ShipViewModel2.ShipSize}" 
-                    HeadPosition="{Binding ShipViewModel2.HeadPosition}" 
-                    Destroyed="{Binding ShipViewModel2.Destroyed}"
-                    VerticalAlignment="Center" 
-                    HorizontalAlignment="Center"/>
-            <c:Ship Orientation="{Binding ShipViewModel3.Orientation}" 
-                    ShipDeck="{Binding ShipViewModel3.ShipDeck}" 
-                    ShipSize="{Binding ShipViewModel3.ShipSize}" 
-                    HeadPosition="{Binding ShipViewModel3.HeadPosition}" 
-                    Destroyed="{Binding ShipViewModel3.Destroyed}"
-                    VerticalAlignment="Center" 
-                    HorizontalAlignment="Center"/>
-            <c:Ship Orientation="{Binding ShipViewModel4.Orientation}" 
-                    ShipDeck="{Binding ShipViewModel4.ShipDeck}" 
-                    ShipSize="{Binding ShipViewModel4.ShipSize}" 
-                    HeadPosition="{Binding ShipViewModel4.HeadPosition}" 
-                    Destroyed="{Binding ShipViewModel4.Destroyed}"
-                    VerticalAlignment="Center" 
-                    HorizontalAlignment="Center"/>
-            <Button Click="Button_Click" Width="200" Height="30"/>
-        </StackPanel>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <c:GameField/>
-            <!--<c:Field IsPlayerField="True" Size="{Binding FieldView1.Size}" Ships="{Binding FieldView1.Ships}" FieldCells="{Binding FieldView1.FieldCells}" Width="300" Height="300"/>-->
-            <c:Field IsPlayerField="False" Grid.Column="1" Size="{Binding FieldView2.Size}" Ships="{Binding FieldView2.Ships}" FieldCells="{Binding FieldView2.FieldCells}" Width="300" Height="300"/>
-        </Grid>
+        <c:GameView Players="{Binding GameViewModel.Players}"/>
     </Grid>
     
 </Window>

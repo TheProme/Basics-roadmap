@@ -20,7 +20,7 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        public event Action BlockHitEvent;
+        public event Action<IClickableCell> HitEvent;
 
         private bool _isHit;
 
@@ -32,14 +32,15 @@ namespace SeaBattle.ViewModels
                 _isHit = value;
                 if (_isHit)
                 {
-                    InvokeHitEvent();
+                    HitEvent?.Invoke(this);
                 }
                 OnPropertyChanged();
             }
         }
-        public void InvokeHitEvent()
+
+        public void InvokeHit()
         {
-            BlockHitEvent?.Invoke();
+            IsHit = true;
         }
 
         public EmptyCellViewModel(Position position)
