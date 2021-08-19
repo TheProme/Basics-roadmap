@@ -34,16 +34,17 @@ namespace SeaBattle.ViewModels
             SetupFieldViewModel playerField = new SetupFieldViewModel(true);
             SetupFieldViewModel aiField = new SetupFieldViewModel(false);
             Players.Add(new PlayerViewModel(playerField, aiField));
-            var ai = new PlayerAIViewModel(aiField, playerField);
-            Players.Add(ai);
-            ai.FieldPreview.InvokeIsReady();
+            Players.Add(new PlayerAIViewModel(aiField, playerField));
             
         }
 
         private void SetPlayerEvents(PlayerViewModel player)
         {
             player.FireEvent += PlayerFireHandler;
-            player.PlayerReadyEvent += PlayerIsReady;
+            if(!(player is PlayerAIViewModel))
+            {
+                player.PlayerReadyEvent += PlayerIsReady;
+            }
         }
 
         private void UnsetPlayerEvents(PlayerViewModel player)
@@ -83,7 +84,7 @@ namespace SeaBattle.ViewModels
                 GameIsOver = player.AreShipsDestroyed();
                 if (GameIsOver)
                 {
-                    StopGame();
+                    StopGame(player);
                 }
                 else
                 {
@@ -97,15 +98,23 @@ namespace SeaBattle.ViewModels
 
         private void PlayerIsReady(PlayerViewModel obj)
         {
-            if(IsPlayersReady())
+            if(ArePlayersReady(obj))
             {
                 StartGame();
             }
         }
 
-        private bool IsPlayersReady()
+        private bool ArePlayersReady(PlayerViewModel player)
         {
-            return Players.All(player => player.FieldIsSet);
+            if (Players.Where(p => !(p is PlayerAIViewModel)).All(player => player.FieldIsSet))
+            {
+                foreach (var ai in Players.Where(p => p is PlayerAIViewModel))
+                {
+                    (ai as PlayerAIViewModel).SetAIReady();
+                }
+                return true;
+            }
+            return false;
         }
 
 
@@ -115,9 +124,11 @@ namespace SeaBattle.ViewModels
             SetNextTurn();
         }
 
-        public void StopGame()
+        public void StopGame(PlayerViewModel player)
         {
-            StopTurns();
+            DisableFields();
+            GameIsOver = true;
+
         }
 
         private void SetNextTurn(PlayerViewModel previousPlayer = null)
@@ -141,11 +152,11 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        private void StopTurns()
+        private void DisableFields()
         {
             foreach (var player in Players)
             {
-                player.PlayerTurn = false;
+                player.FieldPreview.FieldVM.CanClick = false;
             }
         }
     }

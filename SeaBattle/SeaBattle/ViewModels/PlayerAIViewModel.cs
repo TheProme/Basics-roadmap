@@ -107,6 +107,12 @@ namespace SeaBattle.ViewModels
             return newShot;
         }
 
+        public void SetAIReady()
+        {
+            FieldPreview.FieldVM.IsReady = true;
+            FieldPreview.FieldVM.CanClick = true;
+        }
+
 
         private Random rnd = new Random();
 

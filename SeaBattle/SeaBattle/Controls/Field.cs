@@ -25,14 +25,15 @@ namespace SeaBattle.Controls
         }
 
 
-        public FieldViewModel FieldModel
+
+        public bool CanClick
         {
-            get { return (FieldViewModel)GetValue(FieldModelProperty); }
-            set { SetValue(FieldModelProperty, value); }
+            get { return (bool)GetValue(CanClickProperty); }
+            set { SetValue(CanClickProperty, value); }
         }
 
-        public static readonly DependencyProperty FieldModelProperty =
-            DependencyProperty.Register("FieldModel", typeof(FieldViewModel), typeof(Field), new PropertyMetadata(null));
+        public static readonly DependencyProperty CanClickProperty =
+            DependencyProperty.Register("CanClick", typeof(bool), typeof(Field), new PropertyMetadata(null));
 
         public bool IsPlayerField
         {

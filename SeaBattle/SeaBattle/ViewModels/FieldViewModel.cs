@@ -39,6 +39,19 @@ namespace SeaBattle.ViewModels
             }
         }
 
+        private bool _canClick = true;
+
+        public bool CanClick
+        {
+            get => _canClick;
+            set 
+            { 
+                _canClick = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         private bool _canPlaceShip;
 
         public bool CanPlaceShip
@@ -75,6 +88,10 @@ namespace SeaBattle.ViewModels
             Ships.CollectionChanged += ShipsChanged;
             Size = size;
             IsPlayerField = isPlayerField;
+            if(!IsPlayerField)
+            {
+                CanClick = false;
+            }
         }
 
         private void SetShipsOnField(ObservableCollection<ShipViewModel> ships)

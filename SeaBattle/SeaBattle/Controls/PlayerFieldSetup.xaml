@@ -16,13 +16,16 @@
             <Setter Property="Width" Value="150"/>
             <Setter Property="Margin" Value="5"/>
             <Style.Triggers>
+                <DataTrigger Binding="{Binding FieldVM.IsPlayerField}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
                 <DataTrigger Binding="{Binding FieldVM.IsReady}" Value="True">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <Grid x:Name="mainGrid"
+    <Grid x:Name="setupGrid"
           Height="380">
         <Grid.ColumnDefinitions>
             <ColumnDefinition MaxWidth="180"/>
@@ -33,6 +36,9 @@
                 <Grid.Style>
                     <Style TargetType="{x:Type Grid}">
                         <Style.Triggers>
+                            <DataTrigger Binding="{Binding FieldVM.IsPlayerField}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
                             <DataTrigger Binding="{Binding FieldVM.IsReady}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
@@ -95,6 +101,7 @@
                      Size="{Binding FieldVM.Size}" 
                      Ships="{Binding FieldVM.Ships}" 
                      FieldCells="{Binding FieldVM.FieldCells}"
+                     CanClick="{Binding FieldVM.CanClick}"
                      PreviewMouseLeftButtonDown="FieldMouseLeftButtonDown">
                 <i:Interaction.Behaviors>
                     <helpers:MousePositionBehavior Position="{Binding MousePosition, Mode=OneWayToSource}"/>
