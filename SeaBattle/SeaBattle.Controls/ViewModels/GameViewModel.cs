@@ -11,6 +11,19 @@ namespace SeaBattle.ViewModels
     {
         public ObservableCollection<PlayerViewModel> Players { get; set; } = new ObservableCollection<PlayerViewModel>();
 
+        private PlayerViewModel _activePlayer;
+
+        public PlayerViewModel ActivePlayer
+        {
+            get => _activePlayer;
+            set 
+            { 
+                _activePlayer = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         private bool _gameIsOver;
 
         public bool GameIsOver
@@ -75,24 +88,19 @@ namespace SeaBattle.ViewModels
 
         private void PlayerFireHandler(IClickableCell obj, PlayerViewModel player)
         {
+            if (Players.Any(p => p.AreShipsDestroyed()))
+            {
+                StopGame(Players.FirstOrDefault(p => p.AreShipsDestroyed()));
+                return;
+            }
+
             if (obj is EmptyCellViewModel)
             {
                 SetNextTurn(player);
             }
-            else
+            else if (player is PlayerAIViewModel)
             {
-                GameIsOver = player.AreShipsDestroyed();
-                if (GameIsOver)
-                {
-                    StopGame(player);
-                }
-                else
-                {
-                    if(player is PlayerAIViewModel)
-                    {
-                        (player as PlayerAIViewModel).AddTurn((obj as ShipBlockViewModel));
-                    }
-                }
+                (player as PlayerAIViewModel).AddTurn(obj as ShipBlockViewModel);
             }
         }
 
@@ -121,42 +129,69 @@ namespace SeaBattle.ViewModels
 
         public void StartGame()
         {
-            SetNextTurn();
+            SetNextTurn(Players.LastOrDefault());
         }
 
         public void StopGame(PlayerViewModel player)
         {
-            DisableFields();
             GameIsOver = true;
+            StopTurns();
 
         }
 
-        private void SetNextTurn(PlayerViewModel previousPlayer = null)
+        private void SetNextTurn(PlayerViewModel previousPlayer)
         {
-            if(Players.All(player => player.PlayerTurn == false) || previousPlayer == null)
+            if(!GameIsOver)
             {
-                Players.First().PlayerTurn = true;
-            }
-            else
-            {
-                previousPlayer.PlayerTurn = false;
-                var playerIndex = Players.IndexOf(previousPlayer);
-                if (playerIndex + 1 < Players.Count())
+                PlayerViewModel nextPlayer = null;
+                if (Players.All(player => player.PlayerTurn == false) || previousPlayer == null)
                 {
-                    Players[playerIndex + 1].PlayerTurn = true;
+                    nextPlayer = Players.First();
                 }
                 else
                 {
-                    Players[0].PlayerTurn = true;
+                    previousPlayer.PlayerTurn = false;
+                    var playerIndex = Players.IndexOf(previousPlayer);
+                    if (playerIndex + 1 < Players.Count())
+                    {
+                        nextPlayer = Players[playerIndex + 1];
+                    }
+                    else
+                    {
+                        nextPlayer = Players[0];
+                    }
+                }
+
+                nextPlayer.PlayerTurn = true;
+                ActivateFieldsBasedOnTurn();
+                ActivePlayer = nextPlayer;
+            }
+        }
+
+        private void ActivateFieldsBasedOnTurn()
+        {
+            foreach (var player in Players)
+            {
+                if(player.PlayerTurn)
+                {
+                    player.FieldPreview.CanClick = false;
+                    player.OpponentField.CanClick = true;
                 }
             }
         }
 
-        private void DisableFields()
+        private void DisableFields(PlayerViewModel player)
+        {
+            player.FieldPreview.CanClick = false;
+            player.OpponentField.CanClick = false;
+        }
+
+        private void StopTurns()
         {
             foreach (var player in Players)
             {
-                player.FieldPreview.FieldVM.CanClick = false;
+                player.PlayerTurn = false;
+                DisableFields(player);
             }
         }
     }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SeaBattle.ViewModels
 {
@@ -29,8 +30,9 @@ namespace SeaBattle.ViewModels
         private List<Position> _excludedPositions;
         private List<Position> _possibleShots;
 
-        private void CalculateShot(Position? lastHitCell = null)
+        private async void CalculateShot(Position? lastHitCell = null)
         {
+            await Task.Delay(1000);
             if(lastHitCell != null || _currentDamagedBlocks.Count() > 0)
             {
                 var lastHittedBlock = _currentDamagedBlocks.Last();

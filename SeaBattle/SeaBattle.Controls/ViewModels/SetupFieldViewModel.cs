@@ -98,6 +98,18 @@ namespace SeaBattle.ViewModels
             }
         }
 
+        public bool CanClick
+        {
+            get => FieldVM.CanClick;
+            set 
+            {
+                FieldVM.CanClick = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
         private FieldViewModel _fieldVM;
 
         public FieldViewModel FieldVM
@@ -212,6 +224,27 @@ namespace SeaBattle.ViewModels
             {
                 InvokeIsReady();
             }, obj => CheckPlacedShips(ShipSizeValues)));
+        }
+
+        private ICommand _fieldClickCommand;
+        public ICommand FieldClickCommand
+        {
+            get => _fieldClickCommand ?? (_fieldClickCommand = new RelayCommand(obj =>
+            {
+                FieldClickHandler((obj as Position?).Value);
+            }, obj => obj is Position));
+        }
+
+        private void FieldClickHandler(Position mousePosition)
+        {
+            if (IsRemoving)
+            {
+                RemoveShip(MousePosition);
+            }
+            else
+            {
+                PlaceShip(ShipToPlace);
+            }
         }
 
         public void InvokeIsReady()

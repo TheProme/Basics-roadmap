@@ -33,6 +33,18 @@ namespace SeaBattle.Controls
             DependencyProperty.Register("Players", typeof(ObservableCollection<PlayerViewModel>), typeof(GameView), new PropertyMetadata(null));
 
 
+
+        public PlayerViewModel ActivePlayer
+        {
+            get { return (PlayerViewModel)GetValue(ActivePlayerProperty); }
+            set { SetValue(ActivePlayerProperty, value); }
+        }
+
+        public static readonly DependencyProperty ActivePlayerProperty =
+            DependencyProperty.Register("ActivePlayer", typeof(PlayerViewModel), typeof(GameView), new PropertyMetadata(null));
+
+
+
         public bool IsGameOver
         {
             get { return (bool)GetValue(IsGameOverProperty); }

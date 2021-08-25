@@ -25,7 +25,7 @@ namespace SeaBattle
         public GameViewModel GameViewModel { get; set; } = new GameViewModel();
         public MainWindow()
         {
-            this.DataContext = this;
+            this.DataContext = GameViewModel;
             InitializeComponent();
         }
     }

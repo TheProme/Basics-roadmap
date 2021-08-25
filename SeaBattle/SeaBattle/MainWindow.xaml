@@ -4,14 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SeaBattle"
-        xmlns:c="clr-namespace:SeaBattle.Controls"
-        xmlns:ext="clr-namespace:SeaBattle.Extensions"
+        xmlns:c="clr-namespace:SeaBattle.Controls;assembly=SeaBattle.Controls"
         mc:Ignorable="d"
         Title="MainWindow"
         Width="1000" 
         Height="450">
     <Grid>
-        <c:GameView Players="{Binding GameViewModel.Players}"/>
+        <c:GameView Players="{Binding Players}" ActivePlayer="{Binding ActivePlayer}"/>
     </Grid>
     
 </Window>

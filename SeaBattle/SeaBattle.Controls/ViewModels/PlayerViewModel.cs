@@ -78,7 +78,6 @@ namespace SeaBattle.ViewModels
         private void FieldIsReadyHandler()
         {
             FieldIsSet = true;
-            FieldPreview.FieldVM.CanClick = false;
             OpponentField.FieldVM.ShotEvent += FieldShotHandler;
             PlayerReadyEvent?.Invoke(this);
         }

@@ -44,15 +44,6 @@ namespace SeaBattle.Controls
         public static readonly DependencyProperty IsPlayerFieldProperty =
             DependencyProperty.Register("IsPlayerField", typeof(bool), typeof(Field), new PropertyMetadata(false));
 
-        public int Size
-        {
-            get { return (int)GetValue(SizeProperty); }
-            set { SetValue(SizeProperty, value); }
-        }
-
-        public static readonly DependencyProperty SizeProperty =
-            DependencyProperty.Register("Size", typeof(int), typeof(Field), new PropertyMetadata(GameRules.FieldSize, SizeChangedCallback, SizeCoerceValue));
-
 
         public ObservableCollection<FieldCellViewModel> FieldCells
         {
@@ -81,23 +72,6 @@ namespace SeaBattle.Controls
                 }
             }
             return cells;
-        }
-
-        private static object SizeCoerceValue(DependencyObject d, object baseValue)
-        {
-            if ((int)baseValue % 2 == 0 && (int)baseValue > 0)
-            {
-                return baseValue;
-            }
-            return 10;
-        }
-
-        private static void SizeChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = d as Field;
-            control.SetValue(SizeProperty, e.NewValue);
-            //TODO: update FieldCells + Ships. Правильно подвязать работу с Байндингами
-            //control.FieldCells = CreateFieldCells((int)e.NewValue);
         }
 
         public ObservableCollection<ShipViewModel> Ships
