@@ -1,9 +1,12 @@
-﻿using SeaBattle.Extensions;
+﻿using SeaBattle.Commands;
+using SeaBattle.Controls;
+using SeaBattle.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Windows.Input;
 
 namespace SeaBattle.ViewModels
 {
@@ -23,8 +26,32 @@ namespace SeaBattle.ViewModels
             }
         }
 
+        private bool _gameStarted = false;
 
-        private bool _gameIsOver;
+        public bool GameStarted
+        {
+            get => _gameStarted;
+            set 
+            { 
+                _gameStarted = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _currentlyPlaying = false;
+
+        public bool CurrentlyPlaying
+        {
+            get => _currentlyPlaying; 
+            set 
+            {
+                _currentlyPlaying = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        private bool _gameIsOver = false;
 
         public bool GameIsOver
         {
@@ -34,6 +61,49 @@ namespace SeaBattle.ViewModels
                 _gameIsOver = value;
                 OnPropertyChanged();
             }
+        }
+
+        private ICommand _startGameCommand;
+
+        public ICommand StartGameCommand
+        {
+            get => _startGameCommand ?? (_startGameCommand = new RelayCommand(obj =>
+            {
+                GameStarted = true;
+            }));
+        }
+
+        private ICommand _exitCommand;
+
+        public ICommand ExitCommand
+        {
+            get => _exitCommand ?? (_exitCommand = new RelayCommand(obj =>
+            {
+                System.Windows.Application.Current.Shutdown();
+            }));
+        }
+
+        private ICommand _restartCommand;
+
+        public ICommand RestartCommand
+        {
+            get => _restartCommand ?? (_restartCommand = new RelayCommand(obj =>
+            {
+                RestartGame();
+            }));
+        }
+
+        private void RestartGame()
+        {
+            ActivePlayer = null;
+            CurrentlyPlaying = false;
+            GameIsOver = false;
+            foreach (var player in Players)
+            {
+                UnsetPlayerEvents(player);
+            }
+            Players.Clear();
+            AddPlayers();
         }
 
         public GameViewModel()
@@ -77,7 +147,6 @@ namespace SeaBattle.ViewModels
                     }
                     break;
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-                case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
                     foreach (var item in e.OldItems)
                     {
                         UnsetPlayerEvents(item as PlayerViewModel);
@@ -129,14 +198,15 @@ namespace SeaBattle.ViewModels
 
         public void StartGame()
         {
+            CurrentlyPlaying = true;
             SetNextTurn(Players.LastOrDefault());
         }
 
         public void StopGame(PlayerViewModel player)
         {
+            CurrentlyPlaying = false;
             GameIsOver = true;
             StopTurns();
-
         }
 
         private void SetNextTurn(PlayerViewModel previousPlayer)
@@ -174,14 +244,24 @@ namespace SeaBattle.ViewModels
             {
                 if(player.PlayerTurn)
                 {
+
                     player.FieldPreview.CanClick = false;
-                    player.OpponentField.CanClick = true;
+                    //Blocks clicking on player field while AI's turn
+                    if(player is PlayerAIViewModel)
+                    {
+                        player.OpponentField.CanClick = false;
+                    }
+                    else
+                    {
+                        player.OpponentField.CanClick = true;
+                    }
                 }
             }
         }
 
         private void DisableFields(PlayerViewModel player)
         {
+            player.FieldPreview.FieldVM.ClearFog = true;
             player.FieldPreview.CanClick = false;
             player.OpponentField.CanClick = false;
         }

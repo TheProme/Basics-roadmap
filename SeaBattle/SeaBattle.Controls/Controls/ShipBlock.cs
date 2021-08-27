@@ -11,6 +11,31 @@ namespace SeaBattle.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ShipBlock), new FrameworkPropertyMetadata(typeof(ShipBlock)));
         }
+        public Size CellSize
+        {
+            get { return (Size)GetValue(CellSizeProperty); }
+            set { SetValue(CellSizeProperty, value); }
+        }
+
+        public static readonly DependencyProperty CellSizeProperty =
+            DependencyProperty.Register("CellSize", typeof(Size), typeof(ShipBlock), new PropertyMetadata(new Size(GameRules.DefaultCellSize, GameRules.DefaultCellSize), CellSizeChanged, CoerceCellSize));
+
+        private static object CoerceCellSize(DependencyObject d, object baseValue)
+        {
+            if(((Size)baseValue).Width <= 0 && ((Size)baseValue).Height <= 0)
+            {
+                return new Size(GameRules.DefaultCellSize, GameRules.DefaultCellSize);
+            }
+            return (Size)baseValue;
+        }
+
+        private static void CellSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var x = ((Size)e.NewValue).Width;
+            var y = ((Size)e.NewValue).Height;
+            (d as ShipBlock).Arrange(new Rect(new Point(x, y), (d as ShipBlock).DesiredSize));
+            (d as ShipBlock).SetValue(CellSizeProperty, e.NewValue);
+        }
 
         public Position Position
         {

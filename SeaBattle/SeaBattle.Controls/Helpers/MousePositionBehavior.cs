@@ -3,6 +3,7 @@ using SeaBattle.Controls;
 using SeaBattle.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -31,27 +32,32 @@ namespace SeaBattle.Helpers
                 var field = AssociatedObject as Field;
                 var pos = mouseEventArgs.GetPosition(field);
 
+                var firstCell = field.FieldCells.FirstOrDefault();
+
                 int row = 0;
                 int col = 0;
                 double accumulatedHeight = 0.0;
                 double accumulatedWidth = 0.0;
 
+                int x = (int)(pos.X / firstCell.CellSize.Width);
+                int y = (int)(pos.Y / firstCell.CellSize.Height);
+
                 foreach (var cell in field.FieldCells)
                 {
-                    accumulatedHeight += cell.CellSize;
-                    if (accumulatedHeight >= pos.Y)
+                    accumulatedHeight += cell.CellSize.Height;
+                    if (accumulatedHeight > pos.Y)
                         break;
                     row++;
                 }
 
                 foreach (var columnDefinition in field.FieldCells)
                 {
-                    accumulatedWidth += columnDefinition.CellSize;
-                    if (accumulatedWidth >= pos.X)
+                    accumulatedWidth += columnDefinition.CellSize.Width;
+                    if (accumulatedWidth > pos.X)
                         break;
                     col++;
                 }
-                Position = new Position(row, col);
+                Position = new Position(y, x);
             }
         }
 

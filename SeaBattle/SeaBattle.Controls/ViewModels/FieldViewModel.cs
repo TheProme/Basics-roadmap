@@ -27,6 +27,19 @@ namespace SeaBattle.ViewModels
             }
         }
 
+        private bool _clearFog = false;
+
+        public bool ClearFog
+        {
+            get => _clearFog;
+            set 
+            { 
+                _clearFog = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         private bool _isReady;
 
         public bool IsReady
@@ -153,6 +166,7 @@ namespace SeaBattle.ViewModels
 
         private void AddShipToField(ShipViewModel ship)
         {
+            ship.ShipDestroyedEvent += ShipDestroyedHandler;
             foreach (var deck in ship.ShipDeck)
             {
                 var existingCell = FieldCells.FirstOrDefault(cell => cell.Position == deck.Position);
@@ -161,7 +175,7 @@ namespace SeaBattle.ViewModels
                     var index = FieldCells.IndexOf(existingCell);
                     existingCell.CellValue.HitEvent -= CellIsHit;
                     FieldCells.Remove(existingCell);
-                    var shipCell = new FieldCellViewModel(deck.Position, deck);
+                    var shipCell = new FieldCellViewModel(deck.Position, deck) { CellSize = existingCell.CellSize };
                     shipCell.IsOccupied = true;
                     shipCell.CellValue.HitEvent += CellIsHit;
                     FieldCells.Insert(index, shipCell);
@@ -172,6 +186,18 @@ namespace SeaBattle.ViewModels
                 var existingCell = FieldCells.FirstOrDefault(cell => cell.Position == neighbour);
                 if (existingCell != null)
                     existingCell.IsOccupied = true;
+            }
+        }
+
+        private void ShipDestroyedHandler(ShipViewModel ship)
+        {
+            foreach (var neighbour in ship.NeighbourCells)
+            {
+                var existingCell = FieldCells.FirstOrDefault(cell => cell.Position == neighbour);
+                if(existingCell != null)
+                {
+                    existingCell.CellValue.InvokeHit(openNeighbours:true);
+                }
             }
         }
 
@@ -187,7 +213,7 @@ namespace SeaBattle.ViewModels
                     existingCell.CellValue.HitEvent -= CellIsHit;
                     FieldCells.Remove(existingCell);
                     var emptyCell = new EmptyCellViewModel(deck.Position);
-                    var cell = new FieldCellViewModel(emptyCell.Position, emptyCell);
+                    var cell = new FieldCellViewModel(emptyCell.Position, emptyCell) { CellSize = existingCell.CellSize };
                     cell.CellValue.HitEvent += CellIsHit;
                     FieldCells.Insert(index, cell);
                 }

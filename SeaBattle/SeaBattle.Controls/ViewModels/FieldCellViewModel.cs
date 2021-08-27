@@ -8,11 +8,10 @@ namespace SeaBattle.ViewModels
 {
     public class FieldCellViewModel : BaseViewModel
     {
-        private static readonly int _defaultCellSize = 30;
 
-        private int _cellSize = _defaultCellSize;
+        private Size _cellSize = new Size(GameRules.DefaultCellSize, GameRules.DefaultCellSize);
 
-        public int CellSize
+        public Size CellSize
         {
             get => _cellSize;
             set 

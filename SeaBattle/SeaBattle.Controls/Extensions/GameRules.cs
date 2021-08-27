@@ -14,6 +14,8 @@ namespace SeaBattle.Extensions
 
         public static readonly int FieldSize = 10;
 
+        public static readonly int DefaultCellSize = 30;
+
         public static bool CellMatchesGameField(Position cellPosition)
         {
             if(cellPosition.Row >= 0 &&

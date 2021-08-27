@@ -13,6 +13,8 @@ namespace SeaBattle.ViewModels
         public ObservableCollection<ShipBlockViewModel> ShipDeck { get; private set; } = new ObservableCollection<ShipBlockViewModel>();
         public ObservableCollection<Position> NeighbourCells { get; set; } = new ObservableCollection<Position>();
 
+        public event Action<ShipViewModel> ShipDestroyedEvent;
+
         private Orientation _orientation;
 
         public Orientation Orientation
@@ -93,7 +95,10 @@ namespace SeaBattle.ViewModels
         private void BlockHitHandler(IClickableCell clickableCell)
         {
             Destroyed = ShipDeck.All(bl => bl.IsHit);
-            //TODO: +1 ход за подбитие корабля
+            if(Destroyed)
+            {
+                ShipDestroyedEvent?.Invoke(this);
+            }    
         }
 
         private void UpdateShip()

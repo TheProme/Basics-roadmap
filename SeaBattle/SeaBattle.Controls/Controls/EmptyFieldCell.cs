@@ -1,4 +1,5 @@
 ﻿using SeaBattle.Extensions;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -10,6 +11,7 @@ namespace SeaBattle.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(EmptyFieldCell), new FrameworkPropertyMetadata(typeof(EmptyFieldCell)));
         }
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();

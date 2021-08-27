@@ -7,8 +7,6 @@ namespace SeaBattle.ViewModels
 {
     public class ShipBlockViewModel : BaseViewModel, IClickableCell
     {
-        private const int BLOCK_SIZE = 30;
-
         private ShipViewModel _shipBase;
 
         public ShipViewModel ShipBase
@@ -34,7 +32,7 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        private int _blockSize = BLOCK_SIZE;
+        private int _blockSize = GameRules.DefaultCellSize;
 
         public int BlockSize
         {
@@ -45,6 +43,7 @@ namespace SeaBattle.ViewModels
                 OnPropertyChanged();
             }
         }
+
         public event Action<IClickableCell> HitEvent;
 
         private bool _isHit;
@@ -63,7 +62,7 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        public void InvokeHit()
+        public void InvokeHit(bool openNeighbours = false)
         {
             IsHit = true;
         }

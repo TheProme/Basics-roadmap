@@ -5,12 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SeaBattle"
         xmlns:c="clr-namespace:SeaBattle.Controls;assembly=SeaBattle.Controls"
+        xmlns:converters="clr-namespace:SeaBattle.Controls.Converters;assembly=SeaBattle.Controls"
         mc:Ignorable="d"
-        Title="MainWindow"
-        Width="1000" 
-        Height="450">
+        WindowState="Maximized"
+        Title="Battle Ships">
+    <Window.Resources>
+        <converters:InvertableBooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+    </Window.Resources>
     <Grid>
-        <c:GameView Players="{Binding Players}" ActivePlayer="{Binding ActivePlayer}"/>
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Visibility="{Binding GameStarted, Converter={StaticResource BoolToVisibility}, ConverterParameter=Inverted}">
+            <TextBlock Text="Battle Ships"
+                       FontSize="32"
+                       FontFamily="Verdana"/>
+            <Button Content="Start"
+                    Style="{StaticResource CustomButton}"
+                    Command="{Binding StartGameCommand}"/>
+            <Button Content="Exit"
+                    Style="{StaticResource CustomButton}"
+                    Command="{Binding ExitCommand}"/>
+        </StackPanel>
+        <c:GameView Players="{Binding Players}" 
+                    ActivePlayer="{Binding ActivePlayer}"
+                    Visibility="{Binding GameStarted, Converter={StaticResource BoolToVisibility}, ConverterParameter=Normal}"/>
     </Grid>
     
 </Window>

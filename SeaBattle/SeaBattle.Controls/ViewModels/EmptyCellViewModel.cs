@@ -30,7 +30,7 @@ namespace SeaBattle.ViewModels
             set
             {
                 _isHit = value;
-                if (_isHit)
+                if (_isHit && !_openNeighbours)
                 {
                     HitEvent?.Invoke(this);
                 }
@@ -38,8 +38,11 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        public void InvokeHit()
+        private bool _openNeighbours;
+
+        public void InvokeHit(bool openNeighbours = false)
         {
+            _openNeighbours = openNeighbours;
             IsHit = true;
         }
 

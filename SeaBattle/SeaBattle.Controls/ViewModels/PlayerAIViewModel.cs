@@ -94,6 +94,11 @@ namespace SeaBattle.ViewModels
                     if(!_shots.Exists(shot => shot == item))
                         _shots.Add(item);
                 }
+                foreach (var neighbour in damagedBlock.ShipBase.NeighbourCells)
+                {
+                    if (!_shots.Exists(shot => shot == neighbour))
+                        _shots.Add(neighbour);
+                }
                 CalculateShot();
             }
             

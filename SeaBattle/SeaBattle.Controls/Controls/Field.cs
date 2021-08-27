@@ -23,6 +23,29 @@ namespace SeaBattle.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Field), new FrameworkPropertyMetadata(typeof(Field)));
         }
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            foreach (var cell in FieldCells)
+                cell.CellSize = new Size(availableSize.Width / GameRules.FieldSize, availableSize.Height / GameRules.FieldSize);
+            return base.MeasureOverride(availableSize);
+        }
+        protected override Size ArrangeOverride(Size arrangeBounds)
+        {
+            foreach (var cell in FieldCells)
+            {
+                cell.CellSize = new Size(arrangeBounds.Width / GameRules.FieldSize, arrangeBounds.Height / GameRules.FieldSize);
+            }
+            return base.ArrangeOverride(arrangeBounds);
+        }
+
+        public bool ClearFog
+        {
+            get { return (bool)GetValue(ClearFogProperty); }
+            set { SetValue(ClearFogProperty, value); }
+        }
+
+        public static readonly DependencyProperty ClearFogProperty =
+            DependencyProperty.Register("ClearFog", typeof(bool), typeof(Field), new PropertyMetadata(false));
 
 
 
