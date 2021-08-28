@@ -77,34 +77,21 @@ namespace SeaBattle.ViewModels
             }
         }
 
-        private int _size = 10;
-
-        public int Size
-        {
-            get => _size;
-            set 
-            { 
-                _size = value;
-                CreateField(value);
-                OnPropertyChanged();
-            }
-        }
-
         public ObservableCollection<FieldCellViewModel> FieldCells { get; set; } = new ObservableCollection<FieldCellViewModel>();
 
         public ObservableCollection<ShipViewModel> Ships { get; set; } = new ObservableCollection<ShipViewModel>();
 
 
-        public FieldViewModel(ObservableCollection<ShipViewModel> ships, int size, bool isPlayerField = false)
+        public FieldViewModel(ObservableCollection<ShipViewModel> ships, bool isPlayerField = false)
         {
             Ships = ships;
             Ships.CollectionChanged += ShipsChanged;
-            Size = size;
             IsPlayerField = isPlayerField;
             if(!IsPlayerField)
             {
                 CanClick = false;
             }
+            CreateField(GameRules.FieldCellsCount);
         }
 
         private void SetShipsOnField(ObservableCollection<ShipViewModel> ships)
@@ -145,6 +132,10 @@ namespace SeaBattle.ViewModels
 
         private void CreateField(int size)
         {
+            foreach (var cell in FieldCells)
+            {
+                cell.CellValue.HitEvent -= CellIsHit;
+            }
             FieldCells.Clear();
             for (int i = 0; i < size; i++)
             {
@@ -239,6 +230,8 @@ namespace SeaBattle.ViewModels
                 RemoveShipFromField(ship);
             }
             Ships.Clear();
+            CreateField(GameRules.FieldCellsCount);
+            IsReady = false;
         }
 
         public void ClearPreview()

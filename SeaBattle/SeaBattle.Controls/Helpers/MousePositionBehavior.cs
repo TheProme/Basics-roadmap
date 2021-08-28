@@ -27,36 +27,16 @@ namespace SeaBattle.Helpers
 
         private void AssociatedObjectOnMouseMove(object sender, MouseEventArgs mouseEventArgs)
         {
-            if(AssociatedObject is Field)
+            if(AssociatedObject is FieldGrid)
             {
-                var field = AssociatedObject as Field;
+                var field = AssociatedObject as FieldGrid;
                 var pos = mouseEventArgs.GetPosition(field);
 
-                var firstCell = field.FieldCells.FirstOrDefault();
+                var firstCell = field.Children[0];
 
-                int row = 0;
-                int col = 0;
-                double accumulatedHeight = 0.0;
-                double accumulatedWidth = 0.0;
+                int x = (int)(pos.X / firstCell.RenderSize.Width);
+                int y = (int)(pos.Y / firstCell.RenderSize.Height);
 
-                int x = (int)(pos.X / firstCell.CellSize.Width);
-                int y = (int)(pos.Y / firstCell.CellSize.Height);
-
-                foreach (var cell in field.FieldCells)
-                {
-                    accumulatedHeight += cell.CellSize.Height;
-                    if (accumulatedHeight > pos.Y)
-                        break;
-                    row++;
-                }
-
-                foreach (var columnDefinition in field.FieldCells)
-                {
-                    accumulatedWidth += columnDefinition.CellSize.Width;
-                    if (accumulatedWidth > pos.X)
-                        break;
-                    col++;
-                }
                 Position = new Position(y, x);
             }
         }

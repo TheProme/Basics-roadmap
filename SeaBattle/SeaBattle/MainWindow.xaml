@@ -7,7 +7,6 @@
         xmlns:c="clr-namespace:SeaBattle.Controls;assembly=SeaBattle.Controls"
         xmlns:converters="clr-namespace:SeaBattle.Controls.Converters;assembly=SeaBattle.Controls"
         mc:Ignorable="d"
-        WindowState="Maximized"
         Title="Battle Ships">
     <Window.Resources>
         <converters:InvertableBooleanToVisibilityConverter x:Key="BoolToVisibility"/>
@@ -20,10 +19,10 @@
                        FontSize="32"
                        FontFamily="Verdana"/>
             <Button Content="Start"
-                    Style="{StaticResource CustomButton}"
+                    Style="{StaticResource ActionButton}"
                     Command="{Binding StartGameCommand}"/>
             <Button Content="Exit"
-                    Style="{StaticResource CustomButton}"
+                    Style="{StaticResource ActionButton}"
                     Command="{Binding ExitCommand}"/>
         </StackPanel>
         <c:GameView Players="{Binding Players}" 

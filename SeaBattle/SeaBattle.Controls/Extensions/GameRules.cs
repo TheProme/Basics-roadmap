@@ -12,16 +12,16 @@ namespace SeaBattle.Extensions
         public static readonly int MediumShips = 2;
         public static readonly int LargeShips = 1;
 
-        public static readonly int FieldSize = 10;
+        public static readonly int FieldCellsCount = 10;
 
         public static readonly int DefaultCellSize = 30;
 
         public static bool CellMatchesGameField(Position cellPosition)
         {
             if(cellPosition.Row >= 0 &&
-               cellPosition.Row < GameRules.FieldSize &&
+               cellPosition.Row < GameRules.FieldCellsCount &&
                cellPosition.Column >= 0 &&
-               cellPosition.Column < GameRules.FieldSize)
+               cellPosition.Column < GameRules.FieldCellsCount)
             {
                 return true;
             }

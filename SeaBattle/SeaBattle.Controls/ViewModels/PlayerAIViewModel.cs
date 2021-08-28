@@ -106,10 +106,10 @@ namespace SeaBattle.ViewModels
 
         private Position GetRandomCellToFire()
         {
-            var newShot = new Position(rnd.Next(GameRules.FieldSize), rnd.Next(GameRules.FieldSize));
+            var newShot = new Position(rnd.Next(GameRules.FieldCellsCount), rnd.Next(GameRules.FieldCellsCount));
             while (_shots.Exists(shot => shot == newShot))
             {
-                newShot = new Position(rnd.Next(GameRules.FieldSize), rnd.Next(GameRules.FieldSize));
+                newShot = new Position(rnd.Next(GameRules.FieldCellsCount), rnd.Next(GameRules.FieldCellsCount));
             }
             return newShot;
         }
@@ -125,10 +125,22 @@ namespace SeaBattle.ViewModels
 
         public PlayerAIViewModel(SetupFieldViewModel previewField, SetupFieldViewModel opponentField) : base(previewField, opponentField)
         {
+            SetShotCollections();
+        }
+
+        private void SetShotCollections()
+        {
             _shots = new List<Position>();
             _currentDamagedBlocks = new List<ShipBlockViewModel>();
             _excludedPositions = new List<Position>();
             _possibleShots = new List<Position>();
+        }
+
+        public override void ClearField()
+        {
+            base.ClearField();
+            FieldPreview.RandomizePlacement();
+            SetShotCollections();
         }
     }
 }

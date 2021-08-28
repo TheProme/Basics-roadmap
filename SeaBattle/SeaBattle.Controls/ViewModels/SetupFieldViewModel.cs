@@ -128,18 +128,18 @@ namespace SeaBattle.ViewModels
         {
             if(isPlayerField)
             {
-                FieldVM = new FieldViewModel(Ships, GameRules.FieldSize, true);
+                FieldVM = new FieldViewModel(Ships, true);
                 CurrentShipSize = ShipSize.Tiny;
             }
             else
             {
-                FieldVM = new FieldViewModel(Ships, GameRules.FieldSize, false);
+                FieldVM = new FieldViewModel(Ships, false);
                 RandomizePlacement();
             }
             
         }
 
-        private void RandomizePlacement()
+        public void RandomizePlacement()
         {
             FieldVM.ClearField();
             foreach (var size in ShipSizeValues.Reverse())
@@ -172,7 +172,7 @@ namespace SeaBattle.ViewModels
                 PreviewShip = new ShipViewModel((Orientation)rnd.Next(0, 2), shipSize, new Position(0,0));
                 do
                 {
-                    PreviewShip.HeadPosition = new Position(rnd.Next(GameRules.FieldSize - 1), rnd.Next(GameRules.FieldSize - 1));
+                    PreviewShip.HeadPosition = new Position(rnd.Next(GameRules.FieldCellsCount - 1), rnd.Next(GameRules.FieldCellsCount - 1));
                     canPlace = SetShipPreview(PreviewShip.HeadPosition);
                     if (!canPlace)
                     {
@@ -266,14 +266,14 @@ namespace SeaBattle.ViewModels
             {
                 ShipToPlace.HeadPosition = headDeck;
                 var shipDeck = ShipToPlace.ShipDeck.LastOrDefault();
-                if (shipDeck != null && shipDeck.Position.Row >= FieldVM.Size)
+                if (shipDeck != null && shipDeck.Position.Row >= GameRules.FieldCellsCount)
                 {
-                    int rowDifference = (FieldVM.Size - 1) - shipDeck.Position.Row;
+                    int rowDifference = (GameRules.FieldCellsCount - 1) - shipDeck.Position.Row;
                     ShipToPlace.HeadPosition = new Position(ShipToPlace.HeadPosition.Row + rowDifference, ShipToPlace.HeadPosition.Column);
                 }
-                if (shipDeck != null && shipDeck.Position.Column >= FieldVM.Size)
+                if (shipDeck != null && shipDeck.Position.Column >= GameRules.FieldCellsCount)
                 {
-                    int colDifference = (FieldVM.Size - 1) - shipDeck.Position.Column;
+                    int colDifference = (GameRules.FieldCellsCount - 1) - shipDeck.Position.Column;
                     ShipToPlace.HeadPosition = new Position(ShipToPlace.HeadPosition.Row, ShipToPlace.HeadPosition.Column + colDifference);
                 }
                 return FieldVM.PreviewShip(ShipToPlace);

@@ -33,7 +33,6 @@ namespace SeaBattle.Controls
             DependencyProperty.Register("Players", typeof(ObservableCollection<PlayerViewModel>), typeof(GameView), new PropertyMetadata(null));
 
 
-
         public PlayerViewModel ActivePlayer
         {
             get { return (PlayerViewModel)GetValue(ActivePlayerProperty); }

@@ -77,6 +77,10 @@ namespace SeaBattle.ViewModels
 
         private void FieldIsReadyHandler()
         {
+            if(OpponentField != null)
+            {
+                OpponentField.FieldVM.ShotEvent -= FieldShotHandler;
+            }
             FieldIsSet = true;
             OpponentField.FieldVM.ShotEvent += FieldShotHandler;
             PlayerReadyEvent?.Invoke(this);
@@ -84,6 +88,11 @@ namespace SeaBattle.ViewModels
         public bool AreShipsDestroyed()
         {
             return ActiveShips.All(ship => ship.Destroyed);
+        }
+
+        public virtual void ClearField()
+        {
+            FieldPreview.FieldVM.ClearField();
         }
     }
 }

@@ -7,99 +7,18 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:converters="clr-namespace:SeaBattle.Controls.Converters">
 
-    <SolidColorBrush x:Key="NotHitDeck" Color="Green"/>
-    <SolidColorBrush x:Key="HitDeck" Color="Orange"/>
-    <SolidColorBrush x:Key="DestroyedShip" Color="Red"/>
-    <SolidColorBrush x:Key="EmptyCellBackground" Color="Blue"/>
-    <SolidColorBrush x:Key="MissedCellBackground" Color="RoyalBlue"/>
-    <SolidColorBrush x:Key="FogOfWar" Color="Gray"/>
-    <DrawingImage x:Key="ArrowDown">
-        <DrawingImage.Drawing>
-            <GeometryDrawing Brush="#0011ff" Geometry="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/>
-        </DrawingImage.Drawing>
-    </DrawingImage>
+    <ResourceDictionary x:Key="ButtonStylesDictionary" Source="Styles/ButtonStyles.xaml"/>
+    <ResourceDictionary x:Key="ComboBoxStyleDictionary" Source="Styles/CustomComboBox.xaml"/>
+
+    <SolidColorBrush x:Key="NotHitDeck" Color="#6acc74"/>
+    <SolidColorBrush x:Key="HitDeck" Color="#d9e655"/>
+    <SolidColorBrush x:Key="DestroyedShip" Color="#cc776a"/>
+    <SolidColorBrush x:Key="EmptyCellBackground" Color="#55a9e6"/>
+    <SolidColorBrush x:Key="MissedCellBackground" Color="#000a54"/>
+    <SolidColorBrush x:Key="FogOfWar" Color="#55a9e6"/>
 
     <converters:InvertableBooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
-    <Style x:Key="SetupButtonText" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontSize" Value="16"/>
-        <Setter Property="FontFamily" Value="Verdana"/>
-    </Style>
-
-    <Style x:Key="ActionButton" TargetType="{x:Type Button}">
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="MinWidth" Value="100"/>
-        <Setter Property="MinHeight" Value="40"/>
-        <Setter Property="Margin" Value="5"/>
-        <Setter Property="Foreground" Value="#0011ff"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Border x:Name="PART_Border"
-                            BorderBrush="#0011ff"
-                            BorderThickness="1"
-                            CornerRadius="5"
-                            Background="{TemplateBinding Background}">
-                        <ContentPresenter>
-                            <ContentPresenter.ContentTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{TemplateBinding Content}" 
-                                               Style="{StaticResource SetupButtonText}"
-                                               Foreground="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}"
-                                               TextAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"/>
-                                </DataTemplate>
-                            </ContentPresenter.ContentTemplate>
-                        </ContentPresenter>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Background" Value="LightGray"/>
-                            <Setter TargetName="PART_Border" Property="BorderBrush" Value="LightGray"/>
-                            <Setter TargetName="PART_Border" Property="Opacity" Value="0.3"/>
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsMouseOver" Value="True"/>
-                                <Condition Property="IsPressed" Value="False"/>
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ColorAnimation Duration="0:0:0.1"
-                                                        Storyboard.TargetProperty="Background.Color" To="#0011ff"/>
-                                        <ColorAnimation Duration="0:0:0.1"
-                                                        Storyboard.TargetProperty="Foreground.Color" To="White"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </MultiTrigger.EnterActions>
-                            <MultiTrigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard FillBehavior="Stop">
-                                        <ColorAnimation Duration="0:0:0.1"
-                                                        Storyboard.TargetProperty="Background.Color" To="White"/>
-                                        <ColorAnimation Duration="0:0:0.1"
-                                                        Storyboard.TargetProperty="Foreground.Color" To="#0011ff"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </MultiTrigger.ExitActions>
-                        </MultiTrigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="SetupButton" BasedOn="{StaticResource ActionButton}" TargetType="{x:Type Button}">
-        <Setter Property="Visibility" Value="{Binding FieldVM.IsPlayerField, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Normal}"/>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding FieldVM.IsReady}" Value="True">
-                <Setter Property="Visibility" Value="Collapsed"/>
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
-    
     <Style x:Key="BlockButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Template">
             <Setter.Value>
@@ -117,165 +36,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <Style x:Key="ToggleAction" TargetType="{x:Type ToggleButton}">
-        <Setter Property="Background" Value="Red"/>
-        <Setter Property="MinWidth" Value="100"/>
-        <Setter Property="MinHeight" Value="40"/>
-        <Setter Property="Margin" Value="5"/>
-        <Setter Property="Foreground" Value="White"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Border x:Name="PART_Border"
-                            BorderBrush="{TemplateBinding Background}"
-                            BorderThickness="1"
-                            CornerRadius="5"
-                            Background="{TemplateBinding Background}">
-                        <ContentPresenter>
-                            <ContentPresenter.ContentTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{TemplateBinding Content}" 
-                                               Style="{StaticResource SetupButtonText}"
-                                               Foreground="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}, Path=Foreground}"
-                                               TextAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"/>
-                                </DataTemplate>
-                            </ContentPresenter.ContentTemplate>
-                        </ContentPresenter>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <EventTrigger RoutedEvent="Checked">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ColorAnimation Storyboard.TargetProperty="Background.Color"
-                                                    To="Green"
-                                                    Duration="0:0:0.1"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="Unchecked">
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ColorAnimation Storyboard.TargetProperty="Background.Color"
-                                                    To="Red"
-                                                    Duration="0:0:0.1"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="CustomComboBoxItem" TargetType="{x:Type ComboBoxItem}">
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="Foreground" Value="#0011ff"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                    <Border Name="PART_Border"
-                            Padding="3"
-                            Background="{TemplateBinding Background}">
-                        <ContentPresenter>
-                            <ContentPresenter.ContentTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
-                                               Style="{StaticResource SetupButtonText}"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"
-                                               TextAlignment="Center"/>
-                                </DataTemplate>
-                            </ContentPresenter.ContentTemplate>
-                        </ContentPresenter>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsHighlighted" Value="True">
-                            <Setter Property="Background" Value="#0011ff"/>
-                            <Setter Property="Foreground" Value="White"/>
-                        </Trigger>
-                        <Trigger Property="IsHighlighted" Value="False">
-                            <Setter TargetName="PART_Border" Property="Effect">
-                                <Setter.Value>
-                                    <BlurEffect Radius="3"/>
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="30"/>
-            </Grid.ColumnDefinitions>
-            <Border x:Name="Border" 
-                    Grid.ColumnSpan="2" 
-                    Background="{TemplateBinding Background}" 
-                    BorderBrush="#0011ff" 
-                    BorderThickness="2" />
-            <Image Source="{StaticResource ArrowDown}" 
-                   Grid.Column="1"  
-                   Margin="5 5 10 5"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"/>
-        </Grid>
-    </ControlTemplate>
-
-    <Style x:Key="CustomComboBox" TargetType="{x:Type ComboBox}">
-        <Setter Property="ItemContainerStyle" Value="{StaticResource CustomComboBoxItem}"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ComboBox}">
-                    <Grid>
-                        <ToggleButton Name="ToggleButton" 
-                                      Background="White"
-                                      Template="{StaticResource ComboBoxToggleButton}" 
-                                      IsChecked="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsDropDownOpen, Mode=TwoWay}"
-                                      ClickMode="Press">
-                        </ToggleButton>
-                        <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
-                                          MinHeight="30"
-                                          IsHitTestVisible="False"
-                                          VerticalAlignment="Center"
-                                          HorizontalAlignment="Center">
-                            <ContentPresenter.ContentTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
-                                               Style="{StaticResource SetupButtonText}"
-                                               VerticalAlignment="Center"
-                                               HorizontalAlignment="Center"
-                                               TextAlignment="Center"/>
-                                </DataTemplate>
-                            </ContentPresenter.ContentTemplate>
-                        </ContentPresenter>
-                        <Popup Placement="Bottom" 
-                               IsOpen="{TemplateBinding IsDropDownOpen}" 
-                               PopupAnimation="Slide">
-                            <Grid SnapsToDevicePixels="True" 
-                                  MinWidth="{TemplateBinding ActualWidth}" 
-                                  MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                <Border Background="White" 
-                                        BorderThickness="1" 
-                                        BorderBrush="#0011ff"/>
-                                <ScrollViewer SnapsToDevicePixels="True">
-                                    <StackPanel IsItemsHost="True" 
-                                                KeyboardNavigation.DirectionalNavigation="Contained" />
-                                </ScrollViewer>
-                            </Grid>
-                        </Popup>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
+    
     <Style TargetType="{x:Type local:EmptyFieldCell}">
         <Setter Property="Template">
             <Setter.Value>
@@ -433,12 +194,6 @@
                                   ShipCell="{StaticResource ShipCell}"/>
 
     <Style TargetType="{x:Type local:Field}">
-        <Setter Property="ClearFog" Value="{Binding ClearFog}"/>
-        <Setter Property="IsPlayerField" Value="{Binding IsPlayerField}"/>
-        <Setter Property="FieldIsReady" Value="{Binding IsReady}"/>
-        <Setter Property="Ships" Value="{Binding Ships}"/>
-        <Setter Property="FieldCells" Value="{Binding FieldCells}"/>
-        <Setter Property="CanClick" Value="{Binding CanClick}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:Field}">
@@ -446,30 +201,41 @@
                                   ItemTemplateSelector="{StaticResource CellTemplateSelector}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid/>
+                                <local:FieldGrid>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=DataContext.FieldClickCommand}" 
+                                                                   CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, Path=DataContext.MousePosition}" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                    <i:Interaction.Behaviors>
+                                        <helpers:MousePositionBehavior Position="{Binding RelativeSource={RelativeSource AncestorType=local:Field}, 
+                                                                                                Path=DataContext.MousePosition, Mode=OneWayToSource}"/>
+                                    </i:Interaction.Behaviors>
+                                </local:FieldGrid>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
-                    <ControlTemplate.Triggers>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsPlayerField}" Value="True"/>
-                                <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=FieldIsReady}" Value="True"/>
-                            </MultiDataTrigger.Conditions>
-                            <MultiDataTrigger.Setters>
-                                <Setter Property="IsEnabled" Value="False"/>
-                            </MultiDataTrigger.Setters>
-                        </MultiDataTrigger>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=CanClick}" Value="True">
-                            <Setter Property="IsEnabled" Value="True"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=CanClick}" Value="False">
-                            <Setter Property="IsEnabled" Value="False"/>
-                        </DataTrigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsPlayerField}" Value="True"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=FieldIsReady}" Value="True"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter Property="IsEnabled" Value="False"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=CanClick}" Value="True">
+                <Setter Property="IsEnabled" Value="True"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=CanClick}" Value="False">
+                <Setter Property="IsEnabled" Value="False"/>
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
 
@@ -509,15 +275,13 @@
                 <ControlTemplate TargetType="{x:Type local:GameView}">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition MaxHeight="150"/>
+                            <RowDefinition MaxHeight="100"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
-                            <Grid Visibility="{Binding CurrentlyPlaying, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Normal}">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
+                            <StackPanel Visibility="{Binding CurrentlyPlaying, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Normal}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
                                 <TextBlock Style="{StaticResource TurnInfo}" 
                                            TextAlignment="Center"
                                            HorizontalAlignment="Center"
@@ -528,8 +292,8 @@
                                         Content="Restart"
                                         Margin="5"
                                         Command="{Binding RestartCommand}"
-                                        Style="{StaticResource ActionButton}"/>
-                            </Grid>
+                                        Style="{DynamicResource ActionButton}"/>
+                            </StackPanel>
                             <StackPanel Visibility="{Binding GameIsOver, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Normal}"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center">
@@ -541,27 +305,47 @@
                                     <Button Content="Play again"
                                             Margin="5"
                                             Command="{Binding RestartCommand}"
-                                            Style="{StaticResource ActionButton}"/>
+                                            Style="{DynamicResource ActionButton}"/>
                                     <Button Content="Exit"
                                             Command="{Binding ExitCommand}"
-                                            Style="{StaticResource ActionButton}"/>
+                                            Style="{DynamicResource ActionButton}"/>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
-                        <ItemsControl Grid.Row="1" 
-                                      ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:GameView}, Path=Players}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type vm:PlayerViewModel}">
-                                    <local:GameSetupControl DataContext="{Binding FieldPreview}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid Rows="1"
-                                         Columns="2"/>
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MaxWidth="180"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition MaxWidth="180"/>
+                            </Grid.ColumnDefinitions>
+                            <local:GameSetupControl Grid.Column="0" 
+                                                    DataContext="{Binding Player.FieldPreview}"
+                                                    Margin="10"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Center"/>
+                            <local:Field DataContext="{Binding Player.FieldPreview}"
+                                         Grid.Column="1"
+                                         Margin="10 20 0 20"
+                                         ClearFog="{Binding FieldVM.ClearFog}"
+                                         IsPlayerField="{Binding FieldVM.IsPlayerField}"
+                                         FieldIsReady="{Binding FieldVM.IsReady}"
+                                         Ships="{Binding FieldVM.Ships}"
+                                         FieldCells="{Binding FieldVM.FieldCells}"
+                                         CanClick="{Binding FieldVM.CanClick}">
+                            </local:Field>
+                            <local:Field DataContext="{Binding AI.FieldPreview}"
+                                         Grid.Column="3"
+                                         Margin="10 20 0 20"
+                                         ClearFog="{Binding FieldVM.ClearFog}"
+                                         IsPlayerField="{Binding FieldVM.IsPlayerField}"
+                                         FieldIsReady="{Binding FieldVM.IsReady}"
+                                         Ships="{Binding FieldVM.Ships}"
+                                         FieldCells="{Binding FieldVM.FieldCells}"
+                                         CanClick="{Binding FieldVM.CanClick}">
+                            </local:Field>
+                        </Grid>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -572,46 +356,38 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:GameSetupControl}">
-                    <Grid x:Name="setupGrid">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition MaxWidth="180"/>
-                            <ColumnDefinition MinWidth="300"/>
-                            <ColumnDefinition MaxWidth="180"/>
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0"
-                                Visibility="{Binding FieldVM.IsPlayerField, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Normal}">
-                            <Grid x:Name="setupOptionsGrid"
+                    <Border Visibility="{Binding FieldVM.IsPlayerField, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Normal}">
+                        <Grid x:Name="setupOptionsGrid"
                                   Visibility="{Binding FieldVM.IsReady, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverted}">
-                                <StackPanel Grid.Row="0"
-                                            Orientation="Vertical">
-                                    <StackPanel>
-                                        <TextBlock Text="Ship size" 
-                                                   Style="{StaticResource SetupButtonText}"
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel>
+                                    <TextBlock Text="Ship size" 
+                                                   Style="{DynamicResource SetupButtonText}"
                                                    VerticalAlignment="Center" 
                                                    HorizontalAlignment="Center" 
                                                    Margin="5"
                                                    Foreground="#0011ff"/>
-                                        <ComboBox ItemsSource="{Binding ShipSizeValues}" 
+                                    <ComboBox ItemsSource="{Binding ShipSizeValues}" 
                                                   SelectedItem="{Binding CurrentShipSize}"
-                                                  Style="{StaticResource CustomComboBox}"
+                                                  Style="{DynamicResource CustomComboBox}"
                                                   Width="150"/>
-                                    </StackPanel>
-                                    <StackPanel MinHeight="190"
-                                                MinWidth="140"
-                                                Height="195">
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal"
+                                </StackPanel>
+                                <StackPanel MinHeight="190"
+                                            MinWidth="140"
+                                            Height="195">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal"
                                                         VerticalAlignment="Top"
                                                         HorizontalAlignment="Center"
                                                         Margin="5">
-                                                <TextBlock Text="Left: "
-                                                           Style="{StaticResource SetupButtonText}"
+                                            <TextBlock Text="Left: "
+                                                           Style="{DynamicResource SetupButtonText}"
                                                            Foreground="#0011ff"/>
-                                                <TextBlock Text="{Binding ShipsLeft}"
-                                                           Style="{StaticResource SetupButtonText}"
+                                            <TextBlock Text="{Binding ShipsLeft}"
+                                                           Style="{DynamicResource SetupButtonText}"
                                                            Foreground="#0011ff"/>
-                                            </StackPanel>
-                                            <local:Ship Orientation="{Binding PreviewShip.Orientation}" 
+                                        </StackPanel>
+                                        <local:Ship Orientation="{Binding PreviewShip.Orientation}" 
                                                     ShipDeck="{Binding PreviewShip.ShipDeck}" 
                                                     ShipSize="{Binding PreviewShip.ShipSize}" 
                                                     HeadPosition="{Binding PreviewShip.HeadPosition}" 
@@ -620,47 +396,23 @@
                                                     IsEnabled="False"
                                                     VerticalAlignment="Center" 
                                                     HorizontalAlignment="Center"/>
-                                        </StackPanel>
                                     </StackPanel>
-                                    <Button Content="Rotate" 
-                                            Command="{Binding RotateShipCommand}"
-                                            Style="{StaticResource SetupButton}"/>
-                                    <Button Content="Randomize" 
-                                            Command="{Binding RandomizePlacementCommand}"
-                                            Style="{StaticResource SetupButton}"/>
-                                    <ToggleButton IsChecked="{Binding IsRemoving}" 
-                                                  Style="{StaticResource ToggleAction}"
-                                                  Content="Remove"/>
                                 </StackPanel>
-                            </Grid>
-                        </Border>
-                        <Grid Grid.Column="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition MaxHeight="100"/>
-                            </Grid.RowDefinitions>
-                            <local:Field DataContext="{Binding FieldVM}"
-                                     Grid.Row="0" 
-                                     x:Name="gameField"
-                                     Margin="10 20 0 20">
-                                     <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="MouseLeftButtonDown" >
-                                            <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType=local:GameSetupControl}, Path=DataContext.FieldClickCommand}" 
-                                                                   CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=local:GameSetupControl}, Path=DataContext.MousePosition}" />
-                                                </i:EventTrigger>
-                                            </i:Interaction.Triggers>
-                                      <i:Interaction.Behaviors>
-                                            <helpers:MousePositionBehavior Position="{Binding RelativeSource={RelativeSource AncestorType=local:GameSetupControl}, 
-                                                                                                Path=DataContext.MousePosition, Mode=OneWayToSource}"/>
-                                      </i:Interaction.Behaviors>
-                            </local:Field>
-                            <Button Grid.Row="1"
-                                    Command="{Binding SetFieldCommand}"
-                                    Content="Ready"
-                                    Height="80"
-                                    Style="{StaticResource SetupButton}"/>
+                                <Button Content="Rotate" 
+                                            Command="{Binding RotateShipCommand}"
+                                            Style="{DynamicResource SetupButton}"/>
+                                <Button Content="Randomize" 
+                                            Command="{Binding RandomizePlacementCommand}"
+                                            Style="{DynamicResource SetupButton}"/>
+                                <ToggleButton IsChecked="{Binding IsRemoving}" 
+                                                  Style="{DynamicResource ToggleAction}"
+                                                  Content="Remove"/>
+                                <Button Command="{Binding SetFieldCommand}"
+                                            Content="Ready"
+                                            Style="{DynamicResource SetupButton}"/>
+                            </StackPanel>
                         </Grid>
-                    </Grid>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -6,7 +6,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/SeaBattle.Controls;component/Styles/ButtonStyle.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/SeaBattle.Controls;component/Styles/ButtonStyles.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/SeaBattle.Controls;component/Styles/CustomComboBox.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

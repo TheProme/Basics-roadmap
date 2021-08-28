@@ -14,6 +14,31 @@ namespace SeaBattle.ViewModels
     {
         public ObservableCollection<PlayerViewModel> Players { get; set; } = new ObservableCollection<PlayerViewModel>();
 
+        private PlayerViewModel _player;
+
+        public PlayerViewModel Player
+        {
+            get => _player;
+            set
+            {
+                _player = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private PlayerAIViewModel _ai;
+
+        public PlayerAIViewModel AI
+        {
+            get => _ai;
+            set 
+            { 
+                _ai = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         private PlayerViewModel _activePlayer;
 
         public PlayerViewModel ActivePlayer
@@ -98,12 +123,16 @@ namespace SeaBattle.ViewModels
             ActivePlayer = null;
             CurrentlyPlaying = false;
             GameIsOver = false;
-            foreach (var player in Players)
-            {
-                UnsetPlayerEvents(player);
-            }
-            Players.Clear();
-            AddPlayers();
+            AI.ClearField();
+            Player.ClearField();
+            Player.FieldPreview.CanClick = true;
+            Player.OpponentField.CanClick = false;
+            //foreach (var player in Players)
+            //{
+            //    UnsetPlayerEvents(player);
+            //}
+            //Players.Clear();
+            //AddPlayers();
         }
 
         public GameViewModel()
@@ -116,9 +145,10 @@ namespace SeaBattle.ViewModels
         {
             SetupFieldViewModel playerField = new SetupFieldViewModel(true);
             SetupFieldViewModel aiField = new SetupFieldViewModel(false);
-            Players.Add(new PlayerViewModel(playerField, aiField));
-            Players.Add(new PlayerAIViewModel(aiField, playerField));
-            
+            Player = new PlayerViewModel(playerField, aiField);
+            AI = new PlayerAIViewModel(aiField, playerField);
+            Players.Add(Player);
+            Players.Add(AI);
         }
 
         private void SetPlayerEvents(PlayerViewModel player)
@@ -159,7 +189,7 @@ namespace SeaBattle.ViewModels
         {
             if (Players.Any(p => p.AreShipsDestroyed()))
             {
-                StopGame(Players.FirstOrDefault(p => p.AreShipsDestroyed()));
+                StopGame();
                 return;
             }
 
@@ -202,11 +232,15 @@ namespace SeaBattle.ViewModels
             SetNextTurn(Players.LastOrDefault());
         }
 
-        public void StopGame(PlayerViewModel player)
+        public void StopGame()
         {
             CurrentlyPlaying = false;
             GameIsOver = true;
             StopTurns();
+            foreach (var p in Players)
+            {
+                DisableFields(p);
+            }
         }
 
         private void SetNextTurn(PlayerViewModel previousPlayer)
@@ -271,7 +305,6 @@ namespace SeaBattle.ViewModels
             foreach (var player in Players)
             {
                 player.PlayerTurn = false;
-                DisableFields(player);
             }
         }
     }

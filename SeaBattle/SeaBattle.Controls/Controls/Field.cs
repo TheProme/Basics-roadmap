@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -23,21 +24,6 @@ namespace SeaBattle.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Field), new FrameworkPropertyMetadata(typeof(Field)));
         }
-        protected override Size MeasureOverride(Size availableSize)
-        {
-            foreach (var cell in FieldCells)
-                cell.CellSize = new Size(availableSize.Width / GameRules.FieldSize, availableSize.Height / GameRules.FieldSize);
-            return base.MeasureOverride(availableSize);
-        }
-        protected override Size ArrangeOverride(Size arrangeBounds)
-        {
-            foreach (var cell in FieldCells)
-            {
-                cell.CellSize = new Size(arrangeBounds.Width / GameRules.FieldSize, arrangeBounds.Height / GameRules.FieldSize);
-            }
-            return base.ArrangeOverride(arrangeBounds);
-        }
-
         public bool ClearFog
         {
             get { return (bool)GetValue(ClearFogProperty); }
@@ -46,8 +32,6 @@ namespace SeaBattle.Controls
 
         public static readonly DependencyProperty ClearFogProperty =
             DependencyProperty.Register("ClearFog", typeof(bool), typeof(Field), new PropertyMetadata(false));
-
-
 
         public bool CanClick
         {
@@ -75,7 +59,7 @@ namespace SeaBattle.Controls
         }
 
         public static readonly DependencyProperty FieldCellsProperty =
-            DependencyProperty.Register("FieldCells", typeof(ObservableCollection<FieldCellViewModel>), typeof(Field), new PropertyMetadata(CreateFieldCells(GameRules.FieldSize), FieldCellsChange));
+            DependencyProperty.Register("FieldCells", typeof(ObservableCollection<FieldCellViewModel>), typeof(Field), new PropertyMetadata(CreateFieldCells(GameRules.FieldCellsCount), FieldCellsChange));
 
         private static void FieldCellsChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
