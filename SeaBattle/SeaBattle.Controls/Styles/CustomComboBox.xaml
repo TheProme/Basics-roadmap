@@ -33,13 +33,6 @@
                             <Setter Property="Background" Value="#0011ff"/>
                             <Setter Property="Foreground" Value="White"/>
                         </Trigger>
-                        <Trigger Property="IsHighlighted" Value="False">
-                            <Setter TargetName="PART_Border" Property="Effect">
-                                <Setter.Value>
-                                    <BlurEffect Radius="3"/>
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

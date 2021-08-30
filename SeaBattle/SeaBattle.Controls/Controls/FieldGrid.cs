@@ -15,11 +15,6 @@ namespace SeaBattle.Controls
         {
             var minorValue = constraint.Height < constraint.Width ? constraint.Height : constraint.Width;
             constraint = new Size(minorValue, minorValue);
-            var desiredSize = new Size((int)constraint.Width / GameRules.FieldCellsCount, (int)constraint.Height / GameRules.FieldCellsCount);
-            foreach (UIElement cell in InternalChildren)
-            {
-                cell.Measure(desiredSize);
-            }
             return base.MeasureOverride(constraint);
         }
 

@@ -16,7 +16,8 @@
     <SolidColorBrush x:Key="EmptyCellBackground" Color="#55a9e6"/>
     <SolidColorBrush x:Key="MissedCellBackground" Color="#000a54"/>
     <SolidColorBrush x:Key="FogOfWar" Color="#55a9e6"/>
-
+    <SolidColorBrush x:Key="PreviewColor" Color="#a36dde"/>
+    
     <converters:InvertableBooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
     <Style x:Key="BlockButtonStyle" TargetType="{x:Type Button}">
@@ -127,7 +128,7 @@
                 <Setter Property="IsEnabled" Value="True"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding IsPreview}" Value="True">
-                <Setter TargetName="PART_Cell" Property="Background" Value="Purple"/>
+                <Setter TargetName="PART_Cell" Property="Background" Value="{StaticResource PreviewColor}"/>
             </DataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
@@ -135,7 +136,7 @@
                     <Condition Binding="{Binding IsOccupied}" Value="True"/>
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter TargetName="PART_Cell" Property="Background" Value="Red"/>
+                    <Setter TargetName="PART_Cell" Property="Background" Value="{StaticResource DestroyedShip}"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -165,7 +166,7 @@
                 <Setter Property="IsEnabled" Value="True"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding IsPreview}" Value="True">
-                <Setter TargetName="PART_ShipBlock" Property="Background" Value="Purple"/>
+                <Setter TargetName="PART_ShipBlock" Property="Background" Value="{StaticResource PreviewColor}"/>
             </DataTrigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
@@ -173,7 +174,7 @@
                     <Condition Binding="{Binding IsOccupied}" Value="True"/>
                 </MultiDataTrigger.Conditions>
                 <MultiDataTrigger.Setters>
-                    <Setter TargetName="PART_ShipBlock" Property="Background" Value="Red"/>
+                    <Setter TargetName="PART_ShipBlock" Property="Background" Value="{StaticResource DestroyedShip}"/>
                 </MultiDataTrigger.Setters>
             </MultiDataTrigger>
             <MultiDataTrigger>
@@ -366,7 +367,7 @@
                                                    VerticalAlignment="Center" 
                                                    HorizontalAlignment="Center" 
                                                    Margin="5"
-                                                   Foreground="#0011ff"/>
+                                                   Foreground="{DynamicResource MainButtonsColor}"/>
                                     <ComboBox ItemsSource="{Binding ShipSizeValues}" 
                                                   SelectedItem="{Binding CurrentShipSize}"
                                                   Style="{DynamicResource CustomComboBox}"
@@ -382,10 +383,10 @@
                                                         Margin="5">
                                             <TextBlock Text="Left: "
                                                            Style="{DynamicResource SetupButtonText}"
-                                                           Foreground="#0011ff"/>
+                                                           Foreground="{DynamicResource MainButtonsColor}"/>
                                             <TextBlock Text="{Binding ShipsLeft}"
                                                            Style="{DynamicResource SetupButtonText}"
-                                                           Foreground="#0011ff"/>
+                                                           Foreground="{DynamicResource MainButtonsColor}"/>
                                         </StackPanel>
                                         <local:Ship Orientation="{Binding PreviewShip.Orientation}" 
                                                     ShipDeck="{Binding PreviewShip.ShipDeck}" 

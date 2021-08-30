@@ -127,12 +127,6 @@ namespace SeaBattle.ViewModels
             Player.ClearField();
             Player.FieldPreview.CanClick = true;
             Player.OpponentField.CanClick = false;
-            //foreach (var player in Players)
-            //{
-            //    UnsetPlayerEvents(player);
-            //}
-            //Players.Clear();
-            //AddPlayers();
         }
 
         public GameViewModel()

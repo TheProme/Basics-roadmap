@@ -139,6 +139,7 @@ namespace SeaBattle.ViewModels
         public override void ClearField()
         {
             base.ClearField();
+            FieldPreview.FieldVM.ClearFog = false;
             FieldPreview.RandomizePlacement();
             SetShotCollections();
         }
