@@ -1,0 +1,47 @@
+﻿<Window x:Class="SimplePaint.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimplePaint"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:conv="clr-namespace:SimplePaint.Converters"
+        xmlns:controls="clr-namespace:SimplePaint.Controls;assembly=SimplePaint.Controls"
+        mc:Ignorable="d"
+        Title="MainWindow">
+    <Window.InputBindings>
+        <KeyBinding Gesture="CTRL+Z" Command="{Binding UndoAction}" />
+        <KeyBinding Gesture="CTRL+Y" Command="{Binding RedoAction}" />
+    </Window.InputBindings>
+    <Window.Resources>
+        <conv:MousePositionToElementConverter x:Key="MouseToElementConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ToolBar Grid.Row="0" Style="{StaticResource PaintToolbarStyle}"/>
+        <InkCanvas Grid.Row="1" x:Name="canvas" 
+                   Strokes="{Binding CurrentStrokes}" 
+                   EditingMode="{Binding EditingMode, Mode=TwoWay}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                    <i:InvokeCommandAction Command="{Binding StartDrawFigure}"
+                                           EventArgsConverter="{StaticResource MouseToElementConverter}"
+                                           EventArgsConverterParameter="{Binding ElementName=canvas}"
+                                           PassEventArgsToCommand="True"/>
+                </i:EventTrigger>
+                <i:EventTrigger EventName="MouseMove">
+                    <i:InvokeCommandAction Command="{Binding ContinueDrawFigure}"
+                                           EventArgsConverter="{StaticResource MouseToElementConverter}"
+                                           EventArgsConverterParameter="{Binding ElementName=canvas}"
+                                           PassEventArgsToCommand="True"/>
+                </i:EventTrigger>
+                <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+                    <i:InvokeCommandAction Command="{Binding EndDrawFigure}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </InkCanvas>
+    </Grid>
+</Window>

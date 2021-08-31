@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplePaint", "SimplePaint\SimplePaint.csproj", "{BD3B2B1D-2D06-4CE6-92D7-4A7123698DD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplePaint.Controls", "SimplePaint.Controls\SimplePaint.Controls.csproj", "{C159B0AB-4450-4C2D-832E-47A1F0BD1C69}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD3B2B1D-2D06-4CE6-92D7-4A7123698DD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD3B2B1D-2D06-4CE6-92D7-4A7123698DD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD3B2B1D-2D06-4CE6-92D7-4A7123698DD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD3B2B1D-2D06-4CE6-92D7-4A7123698DD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C159B0AB-4450-4C2D-832E-47A1F0BD1C69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C159B0AB-4450-4C2D-832E-47A1F0BD1C69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C159B0AB-4450-4C2D-832E-47A1F0BD1C69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C159B0AB-4450-4C2D-832E-47A1F0BD1C69}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09955B60-6C20-4DDD-AB17-036F76E7F771}
+	EndGlobalSection
+EndGlobal
